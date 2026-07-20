@@ -1,0 +1,39 @@
+# --- Data files (never commit large survey data) ---
+data/
+*.csv
+*.tsv
+*.xlsx
+*.zip
+*.parquet
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# --- Virtual environments ---
+venv/
+.venv/
+env/
+ENV/
+
+# --- Jupyter Notebook ---
+.ipynb_checkpoints/
+
+# --- Environment / secrets ---
+.env
+
+# --- IDE / OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Logs ---
+*.log
