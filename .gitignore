@@ -1,4 +1,5 @@
 # --- Data files (never commit large survey data) ---
+data/raw/
 data/
 *.csv
 *.tsv

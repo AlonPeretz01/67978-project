@@ -42,14 +42,46 @@ involves reconciling these differences into a consistent, analysis-ready schema.
 
 ```
 .
-├── README.md          # This file
-├── .gitignore         # Excludes data files, venv, notebook checkpoints, etc.
-├── data/              # Local-only folder for raw/processed survey CSVs (gitignored)
-├── notebooks/         # Jupyter notebooks for exploratory analysis and visualizations
-└── src/               # Reusable Python modules (data loading, cleaning, processing)
+├── README.md              # This file
+├── .gitignore             # Excludes raw data, venv, notebook checkpoints, etc.
+├── requirements.txt        # Python dependencies
+├── data/                   # Local-only folder for raw/processed survey CSVs (gitignored)
+│   ├── raw/                # Untouched yearly survey downloads, one subfolder per year
+│   ├── clean/               # Per-year output of the cleaning step
+│   └── processed/           # Final harmonized dataset spanning all years
+├── notebooks/              # Jupyter notebooks for exploratory analysis and visualizations
+└── src/                    # Reusable Python modules
+    ├── cleaning/            # Data cleaning & schema harmonization pipeline
+    │   ├── clean_data.py         # Per-year cleaning (drops empty/near-empty columns)
+    │   └── data_harmonization.py # Maps each year's columns to a common schema and merges them
+    ├── audit_dataset.py
+    ├── analyze_nulls.py
+    └── plot_nulls.py
 ```
 
 Each subfolder contains its own `README.md` explaining its purpose in more detail.
+
+## Running the Cleaning & Harmonization Pipeline
+
+The pipeline turns the raw, per-year survey downloads in `data/raw/` into a single
+longitudinal dataset in `data/processed/`, in two steps:
+
+1. **Clean** each year's raw CSV — drops unnamed/index columns and columns with more than
+   80% missing values, writing one cleaned CSV per year to `data/clean/`:
+   ```
+   python src/cleaning/clean_data.py
+   ```
+2. **Harmonize** the cleaned per-year files — maps each year's differently-named columns
+   (e.g. `ConvertedComp` in 2019 vs. `ConvertedCompYearly` in 2022) onto a shared schema
+   (`Age`, `Education_Level`, `Years_of_Experience`, `Employment_Status`,
+   `Yearly_Compensation`, `Usage_Frequency`, `AI_Tool_Usage`, `AI_Usage_Status`), then
+   concatenates all years into `data/processed/harmonized_stack_overflow_2011_2025.csv`:
+   ```
+   python src/cleaning/data_harmonization.py
+   ```
+
+Both scripts resolve `data/` relative to the repository root, so they can be run from any
+working directory. Run them in order — harmonization depends on `clean_data.py`'s output.
 
 ## Getting the Data
 
