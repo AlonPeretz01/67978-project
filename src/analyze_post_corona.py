@@ -99,11 +99,11 @@ def count_answers(df):
     return counts
 
 
-def drop_all_nan_rows(df):
-    """Count and remove rows where every column is NaN. Returns (cleaned_df, count)."""
-    all_nan_mask = df.isna().all(axis=1)
-    count = int(all_nan_mask.sum())
-    return df.loc[~all_nan_mask].copy(), count
+def drop_all_nan_rows(df, min_nan=5):
+    """Count and remove rows with at least `min_nan` NaN columns. Returns (cleaned_df, count)."""
+    mask = df.isna().sum(axis=1) >= min_nan
+    count = int(mask.sum())
+    return df.loc[~mask].copy(), count
 
 
 def unite_employement(df):
@@ -121,6 +121,23 @@ def unite_employement(df):
         'NaN': 'I prefer not to say',
     }
     df['Employment_Status'] = df['Employment_Status'].replace(employment_map)
+    return df
+
+
+def fill_student_unemployed_compensation(df):
+    """
+    Replace NaN Yearly_Compensation with 0 for respondents whose
+    Employment_Status is 'Student' or 'Not employed, but looking for work'.
+    """
+    df = df.copy()
+    mask = (
+        df['Employment_Status'].isin([
+            'Student',
+            'Not employed, but looking for work',
+        ])
+        & df['Yearly_Compensation'].isna()
+    )
+    df.loc[mask, 'Yearly_Compensation'] = 0
     return df
 
 
@@ -167,9 +184,10 @@ def compare_answer_counts(missing_df, present_df):
 if __name__ == '__main__':
     df = combine_post_corona_datasets()
     df, all_nan_count = drop_all_nan_rows(df)
-    print(f"Rows with all columns NaN (dropped): {all_nan_count}")
-    # df = age_union(df)
-    # df = unite_employement(df)
+    print(f"Rows with at least 5 NaN columns (dropped): {all_nan_count}")
+    df = age_union(df)
+    df = unite_employement(df)
+    df = fill_student_unemployed_compensation(df)
     # missing_comp, present_comp = rows_with_missing_yearly_compensation(df)
     # comparisons = compare_answer_counts(missing_comp, present_comp)
 
@@ -179,4 +197,7 @@ if __name__ == '__main__':
     # for col, comparison in comparisons.items():
     #     print(f"\n=== {col} ===")
     #     print(comparison)
+
+    col_answers = count_answers(df)
+    print(col_answers["Education_Level"])
 
