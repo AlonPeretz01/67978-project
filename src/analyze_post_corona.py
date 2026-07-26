@@ -19,6 +19,9 @@ def load_and_harmonize_year(year):
         print(f"Encoding error for {year}, retrying with latin1...")
         df = pd.read_csv(file_path, low_memory=False, encoding='latin1')
 
+    # print(f"Columns for {year}:")
+    # print(list(df.columns))
+
     harmonized_df = harmonize_schema(df, year)
     print(f"  -> {harmonized_df.shape[0]:,} rows, {harmonized_df.shape[1]} columns")
     return harmonized_df
@@ -35,9 +38,11 @@ def combine_post_corona_datasets():
 
 
 if __name__ == '__main__':
-    df = combine_post_corona_datasets()
-    print("\nRows per year:")
-    print(df['Year'].value_counts().sort_index())
-    print("\nColumns:", list(df.columns))
-    print("\nSample:")
-    print(df.head(3))
+    # df = combine_post_corona_datasets()
+    # print("\nRows per year:")
+    # print(df['Year'].value_counts().sort_index())
+    # print("\nColumns:", list(df.columns))
+    # print("\nSample:")
+    # print(df.head(3))
+    df = load_and_harmonize_year('2020')
+
