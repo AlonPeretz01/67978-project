@@ -17,7 +17,11 @@ TARGET_COLUMNS = [
     'Yearly_Compensation', 
     'Usage_Frequency', 
     'AI_Tool_Usage',
-    'AI_Usage_Status'
+    'AI_Usage_Status',
+    'SOAccount',
+    'SOComm',
+    'SOPartFreq',
+    'SOVisitFreq'
 ]
 
 # Harmonization Dictionary (Schema mapping for all years)
@@ -84,6 +88,10 @@ schema_mapping = {
         'EdLevel': 'Education_Level',
         'YearsCodePro': 'Years_of_Experience',
         'ConvertedComp': 'Yearly_Compensation',
+        'SOAccount': 'Has_SO_account',
+        'SOPartFreq': 'Participates_in_questions',
+        'SOComm': 'part_of_community',
+        'SOVisitFreq': 'Visits_SO_Freq'
     },
     '2021': {
         'Age': 'Age',
@@ -91,6 +99,10 @@ schema_mapping = {
         'EdLevel': 'Education_Level',
         'YearsCodePro': 'Years_of_Experience',
         'ConvertedCompYearly': 'Yearly_Compensation',
+        'SOAccount': 'Has_SO_account',
+        'SOPartFreq': 'Participates_in_questions',
+        'SOComm': 'part_of_community',
+        'SOVisitFreq': 'Visits_SO_Freq'
     },
     '2022': {
         'Age': 'Age',
@@ -98,6 +110,10 @@ schema_mapping = {
         'EdLevel': 'Education_Level',
         'YearsCodePro': 'Years_of_Experience',
         'ConvertedCompYearly': 'Yearly_Compensation',
+        'SOAccount': 'Has_SO_account',
+        'SOPartFreq': 'Participates_in_questions',
+        'SOComm': 'part_of_community',
+        'SOVisitFreq': 'Visits_SO_Freq'
     },
     '2023': {
         'Age': 'Age',
