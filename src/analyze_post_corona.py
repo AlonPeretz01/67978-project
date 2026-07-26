@@ -99,6 +99,31 @@ def count_answers(df):
     return counts
 
 
+def drop_all_nan_rows(df):
+    """Count and remove rows where every column is NaN. Returns (cleaned_df, count)."""
+    all_nan_mask = df.isna().all(axis=1)
+    count = int(all_nan_mask.sum())
+    return df.loc[~all_nan_mask].copy(), count
+
+
+def unite_employement(df):
+    """
+    Normalize Employment_Status labels:
+    - merge 'Employed full-time' and 'Employed, full-time'
+    - map 'Student, part-time' / 'Student part-time' to 'Student'
+    """
+    df = df.copy()
+    employment_map = {
+        'Employed, full-time': 'Employed full-time',
+        'Student, part-time': 'Student',
+        'Student, full-time': 'Student',
+        'Not employed, and not looking for work': 'Not employed, but looking for work',
+        'NaN': 'I prefer not to say',
+    }
+    df['Employment_Status'] = df['Employment_Status'].replace(employment_map)
+    return df
+
+
 def count_rows_with_any_nan(df):
     """Count how many rows contain at least one NaN/NA value."""
     return int(df.isna().any(axis=1).sum())
@@ -111,18 +136,47 @@ def rows_with_missing_yearly_compensation(df):
     return missing, present
 
 
+def compare_answer_counts(missing_df, present_df):
+    """
+    Compare answer shares (as fractions of each group) between the
+    missing- and present-compensation groups for every column except
+    Yearly_Compensation.
+    """
+    missing_counts = count_answers(missing_df)
+    present_counts = count_answers(present_df)
+    comparisons = {}
+
+    columns = [
+        col for col in missing_df.columns
+        if col != 'Yearly_Compensation'
+    ]
+
+    for col in columns:
+        missing_share = missing_counts[col] / len(missing_df)
+        present_share = present_counts[col] / len(present_df)
+        comparison = pd.DataFrame({
+            'missing_comp': missing_share,
+            'present_comp': present_share,
+        }).fillna(0.0)
+        comparison['difference'] = comparison['missing_comp'] - comparison['present_comp']
+        comparisons[col] = comparison.sort_values('difference', key=abs, ascending=False)
+
+    return comparisons
+
+
 if __name__ == '__main__':
     df = combine_post_corona_datasets()
-    df = age_union(df)
-    answer_counts = count_answers(df)
-    # rows_with_nan = count_rows_with_any_nan(df)
+    df, all_nan_count = drop_all_nan_rows(df)
+    print(f"Rows with all columns NaN (dropped): {all_nan_count}")
+    # df = age_union(df)
+    # df = unite_employement(df)
+    # missing_comp, present_comp = rows_with_missing_yearly_compensation(df)
+    # comparisons = compare_answer_counts(missing_comp, present_comp)
 
-    # print(f"Rows with at least one NaN: {rows_with_nan}")
+    # print(f"Missing compensation: {len(missing_comp):,} rows")
+    # print(f"Present compensation: {len(present_comp):,} rows")
 
-    # what we'll try to do is see the differences between the communities who have 
-
-    # for col, counts in answer_counts
-    # .items():
+    # for col, comparison in comparisons.items():
     #     print(f"\n=== {col} ===")
-    #     print(counts)
+    #     print(comparison)
 
