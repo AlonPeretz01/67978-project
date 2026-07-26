@@ -38,11 +38,10 @@ def combine_post_corona_datasets():
 
 
 if __name__ == '__main__':
-    # df = combine_post_corona_datasets()
-    # print("\nRows per year:")
-    # print(df['Year'].value_counts().sort_index())
-    # print("\nColumns:", list(df.columns))
-    # print("\nSample:")
-    # print(df.head(3))
-    df = load_and_harmonize_year('2020')
+    df = combine_post_corona_datasets()
+    print("\nRows per year:")
+    print(df['Year'].value_counts().sort_index())
+    print("\nColumns:", list(df.columns))
+    print("\nSample:")
+    print(df.head(3))
 
