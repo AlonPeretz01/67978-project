@@ -54,7 +54,7 @@ def age_union(df):
 
     def to_age_group(value):
         if pd.isna(value):
-            return value
+            return 'Prefer not to say'
         if value in AGE_BINS_ORDER:
             return value
         try:
@@ -78,6 +78,7 @@ def age_union(df):
 
     mask_2020 = df['Year'] == '2020'
     df.loc[mask_2020, 'Age'] = df.loc[mask_2020, 'Age'].map(to_age_group)
+    df['Age'] = df['Age'].fillna('Prefer not to say')
     return df
 
 
@@ -98,12 +99,30 @@ def count_answers(df):
     return counts
 
 
+def count_rows_with_any_nan(df):
+    """Count how many rows contain at least one NaN/NA value."""
+    return int(df.isna().any(axis=1).sum())
+
+
+def rows_with_missing_yearly_compensation(df):
+    """Return two subsets: Yearly_Compensation is NaN, and Yearly_Compensation is not NaN."""
+    missing = df[df['Yearly_Compensation'].isna()].copy()
+    present = df[df['Yearly_Compensation'].notna()].copy()
+    return missing, present
+
+
 if __name__ == '__main__':
     df = combine_post_corona_datasets()
     df = age_union(df)
     answer_counts = count_answers(df)
+    # rows_with_nan = count_rows_with_any_nan(df)
 
-    for col, counts in answer_counts.items():
-        print(f"\n=== {col} ===")
-        print(counts)
+    # print(f"Rows with at least one NaN: {rows_with_nan}")
+
+    # what we'll try to do is see the differences between the communities who have 
+
+    # for col, counts in answer_counts
+    # .items():
+    #     print(f"\n=== {col} ===")
+    #     print(counts)
 
