@@ -166,11 +166,14 @@ def change_education_level_names(df):
 def change_participation_names(df):
     """Changing names of answers in the participation column"""
     # df = df.copy()
-    col_name = "Participates_in_questions"
+    # col_name = "Participates_in_questions"
+    col_name = 'SOPartFreq'
     # Dictionary mapping old long answers to new short names
     edu_map = {
         "I have never participated in Q&A on Stack Overflow": "Never participated",
         "Less than once per month or monthly": "Once per month or less",
+        "Infrequently, less than once per year": "Once per month or less",
+        "Less than once every 2 - 3 months": "Once per month or less",
         "A few times per month or weekly": "Few times per month",
         "A few times per week": "Weekly",
         "Daily or almost daily": "Daily",
@@ -301,21 +304,40 @@ def plot_education_level(df):
 
 
 PARTICIPATION_ORDER = [
-    'I have never participated in Q&A on Stack Overflow',
-    'Less than once per month or monthly',
-    'A few times per month or weekly',
-    'A few times per week',
-    'Daily or almost daily',
-    'Multiple times per day',
+    'Never participated',
+    'Once per month or less',
+    'Few times per month',
+    'Weekly',
+    'Daily',
 ]
 
+AGE_SHORT_LABELS = {
+    'Under 18 years old': '<18',
+    '18-24 years old': '18-24',
+    '25-34 years old': '25-34',
+    '35-44 years old': '35-44',
+    '45-54 years old': '45-54',
+    '55-64 years old': '55-64',
+    '65 years or older': '65+',
+}
 
-def plot_fulltime_participation(df):
+AGE_SHORT_ORDER = ['<18', '18-24', '25-34', '35-44', '45-54', '55-64', '65+']
+
+PARTICIPATION_COLORS = {
+    'Never participated': '#4C78A8',
+    'Once per month or less': '#F58518',
+    'Few times per month': '#54A24B',
+    'Weekly': '#E45756',
+    'Daily': '#B279A2',
+}
+
+
+def plot_fulltime_participation(df, employment_status: str):
     """
     Bar plot of Participates_in_questions frequency for respondents
-    employed full-time. Ignores NaN. Y-axis is share of that subgroup.
+    in employment status x. Ignores NaN. Y-axis is share of that subgroup.
     """
-    employed = df[df['Employment_Status'] == 'Employed full-time']
+    employed = df[df['Employment_Status'] == employment_status]
     filtered = employed[employed['Participates_in_questions'].notna()]
     shares = (
         filtered['Participates_in_questions']
@@ -330,23 +352,72 @@ def plot_fulltime_participation(df):
     ax.set_xticklabels(shares.index, rotation=35, ha='right')
     ax.set_ylim(0.0, 1.0)
     ax.set_yticks([i / 10 for i in range(11)])
-    ax.set_ylabel('Share of employed full-time respondents')
+    ax.set_ylabel(f'Share of {employment_status} respondents')
     ax.set_xlabel('Participation frequency in Q&A')
-    ax.set_title('Q&A participation among full-time employees')
+    ax.set_title(f'Q&A participation among {employment_status}')
+    plt.tight_layout()
+    plt.show()
+    return shares
+
+
+def plot_age_participation_stacked(df):
+    """
+    Stacked bar chart: for each age group, share of participation frequencies.
+    Each stack segment is participation / age-group total.
+    """
+    filtered = df[
+        df['Age'].isin(AGE_BINS_ORDER)
+        & df['SOPartFreq'].isin(PARTICIPATION_ORDER)
+    ].copy()
+    filtered['Age_short'] = filtered['Age'].map(AGE_SHORT_LABELS)
+
+    # Rows = age groups, columns = participation; values = within-age shares
+    shares = (
+        pd.crosstab(filtered['Age_short'], filtered['SOPartFreq'], normalize='index') 
+        # before: Participates_in_questions
+        .reindex(index=AGE_SHORT_ORDER, columns=PARTICIPATION_ORDER, fill_value=0.0)
+    )
+
+    fig, ax = plt.subplots(figsize=(11, 6))
+    bottom = pd.Series(0.0, index=shares.index)
+    x = range(len(shares.index))
+
+    for participation in PARTICIPATION_ORDER:
+        values = shares[participation]
+        ax.bar(
+            x,
+            values,
+            bottom=bottom,
+            label=participation,
+            color=PARTICIPATION_COLORS[participation],
+        )
+        bottom = bottom + values
+
+    ax.set_xticks(list(x))
+    ax.set_xticklabels(shares.index)
+    ax.set_ylim(0.0, 1.0)
+    ax.set_yticks([i / 10 for i in range(11)])
+    ax.set_ylabel('Share within age group')
+    ax.set_xlabel('Age group')
+    ax.set_title('Q&A participation by age group')
+    ax.legend(title='Participation', bbox_to_anchor=(1.02, 1), loc='upper left')
     plt.tight_layout()
     plt.show()
     return shares
 
 
 if __name__ == '__main__':
-    df = combine_post_corona_datasets()
-    df, all_nan_count = drop_all_nan_rows(df)
-    print(f"Rows with at least 5 NaN columns (dropped): {all_nan_count}")
-    df = age_union(df)
-    df = unite_employement(df)
-    df = fill_student_unemployed_compensation(df)
-    df = change_education_level_names(df)
-    df = change_participation_names(df)
+    # df = combine_post_corona_datasets()
+    # df, all_nan_count = drop_all_nan_rows(df)
+    # print(f"Rows with at least 5 NaN columns (dropped): {all_nan_count}")
+    # df = age_union(df)
+    # df = unite_employement(df)
+    # df = fill_student_unemployed_compensation(df)
+    # df = change_education_level_names(df)
+    # df = change_participation_names(df)
+    df_2025 = pd.read_csv("C:/Users/ishay/needle_in_haystack/67978-project/project_data/2025/survey_results_public-selected-columns_2025.csv.crswap")
+    df_2025 = change_participation_names(df_2025)
     # plot_part_of_community(df)
     # plot_education_level(df)
-    plot_fulltime_participation(df)
+    # plot_fulltime_participation(df, "Student")
+    plot_age_participation_stacked(df_2025)
