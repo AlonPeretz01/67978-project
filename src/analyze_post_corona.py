@@ -163,6 +163,25 @@ def change_education_level_names(df):
 
     return df
 
+def change_participation_names(df):
+    """Changing names of answers in the participation column"""
+    # df = df.copy()
+    col_name = "Participates_in_questions"
+    # Dictionary mapping old long answers to new short names
+    edu_map = {
+        "I have never participated in Q&A on Stack Overflow": "Never participated",
+        "Less than once per month or monthly": "Once per month or less",
+        "A few times per month or weekly": "Few times per month",
+        "A few times per week": "Weekly",
+        "Daily or almost daily": "Daily",
+        "Multiple times per day": "Daily",
+    }
+    df[col_name] = df[col_name].astype(str).str.strip()
+    # Replace values inside the specific column
+    df[col_name] = df[col_name].replace(edu_map)
+    
+    return df
+
 def count_rows_with_any_nan(df):
     """Count how many rows contain at least one NaN/NA value."""
     return int(df.isna().any(axis=1).sum())
@@ -281,6 +300,44 @@ def plot_education_level(df):
     return shares
 
 
+PARTICIPATION_ORDER = [
+    'I have never participated in Q&A on Stack Overflow',
+    'Less than once per month or monthly',
+    'A few times per month or weekly',
+    'A few times per week',
+    'Daily or almost daily',
+    'Multiple times per day',
+]
+
+
+def plot_fulltime_participation(df):
+    """
+    Bar plot of Participates_in_questions frequency for respondents
+    employed full-time. Ignores NaN. Y-axis is share of that subgroup.
+    """
+    employed = df[df['Employment_Status'] == 'Employed full-time']
+    filtered = employed[employed['Participates_in_questions'].notna()]
+    shares = (
+        filtered['Participates_in_questions']
+        .value_counts()
+        .reindex(PARTICIPATION_ORDER, fill_value=0)
+        / len(filtered)
+    )
+
+    fig, ax = plt.subplots(figsize=(11, 5))
+    ax.bar(range(len(shares)), shares.values)
+    ax.set_xticks(range(len(shares)))
+    ax.set_xticklabels(shares.index, rotation=35, ha='right')
+    ax.set_ylim(0.0, 1.0)
+    ax.set_yticks([i / 10 for i in range(11)])
+    ax.set_ylabel('Share of employed full-time respondents')
+    ax.set_xlabel('Participation frequency in Q&A')
+    ax.set_title('Q&A participation among full-time employees')
+    plt.tight_layout()
+    plt.show()
+    return shares
+
+
 if __name__ == '__main__':
     df = combine_post_corona_datasets()
     df, all_nan_count = drop_all_nan_rows(df)
@@ -289,5 +346,7 @@ if __name__ == '__main__':
     df = unite_employement(df)
     df = fill_student_unemployed_compensation(df)
     df = change_education_level_names(df)
+    df = change_participation_names(df)
     # plot_part_of_community(df)
-    plot_education_level(df)
+    # plot_education_level(df)
+    plot_fulltime_participation(df)
