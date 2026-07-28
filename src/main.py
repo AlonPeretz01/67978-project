@@ -26,7 +26,27 @@ COMMUNITY_ORDER = [
     'Yes, definitely',
 ]
 
+VISITING_ORDER = [
+    'nan',
+    'Once per month or less',
+    'Few times per month',
+    'Weekly',
+    'Daily',
+]
 
+EDUCATION_ORDER = [
+    'Never completed',
+    'Primary school',
+    'High School',
+    'didnt finish college',
+    'Associate degree',
+    'B.S.',
+    'M.S.',
+    'Professional degree',
+    'Ph.D.',
+]
+
+EDUCATION_IGNORE = {'Something else'}
 
 def load_and_harmonize_year(year):
     """Load survey_results_public for a year and apply schema harmonization."""
@@ -61,7 +81,12 @@ if __name__ == '__main__':
     post_corona.drop_all_nan_rows()
     post_corona.change_education_level_names()
     post_corona.change_participation_names()
+    post_corona.change_visiting_names()
     post_corona.fill_student_unemployed_compensation()
+    # print(final_df['Visits_SO_freq'].value_counts())
+    # print("\n")
+    # print(final_df['Participates_in_questions'].value_counts())
+    post_corona.plot_column('Part_of_community', COMMUNITY_ORDER)
     # post_corona.plot_compare_answer_with_column('Part_of_community', 'Yes, definitely','Participates_in_questions', )
-    post_corona.plot_stacked_by_columns('Part_of_community', 'Participates_in_questions', 
-                                        COMMUNITY_ORDER, PARTICIPATION_ORDER)
+    # post_corona.plot_stacked_by_columns('Part_of_community', 'Visits_SO_freq', 
+    #                                     COMMUNITY_ORDER, VISITING_ORDER)

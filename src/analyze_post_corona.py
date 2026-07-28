@@ -198,6 +198,23 @@ class Post_Corona:
         self.df = df
         return self.df
 
+    def change_visiting_names(self):
+        df = self.df.copy()
+        col_name = 'Visits_SO_freq'
+        visiting_map = {
+            "I have never visited Stack Overflow (before today)": "Never visited",
+            "Less than once per month or monthly": "Once per month or less",
+            "A few times per month or weekly": "Few times per month",
+            "A few times per week": "Weekly",
+            "Daily or almost daily": "Daily",
+            "Multiple times per day": "Daily",
+        }
+        df[col_name] = df[col_name].astype(str).str.strip()
+        df[col_name] = df[col_name].replace(visiting_map)
+        df = df[df[col_name] != "Never visited"].copy()
+        self.df = df
+        return self.df
+
     def count_rows_with_any_nan(self):
         """Count how many rows contain at least one NaN/NA value."""
         return int(self.df.isna().any(axis=1).sum())
@@ -235,30 +252,55 @@ class Post_Corona:
 
         return comparisons
 
-    def plot_part_of_community(self):
-        """
-        Bar plot of Part_of_community answer shares for the ordered scale
-        from 'No, not at all' to 'Yes, definitely'. Other answers are ignored.
-        """
-        filtered = self.df[self.df['Part_of_community'].isin(COMMUNITY_ORDER)]
-        shares = (
-            filtered['Part_of_community']
-            .value_counts()
-            .reindex(COMMUNITY_ORDER, fill_value=0)
-            / len(filtered)
-        )
+    # def plot_part_of_community(self):
+    #     """
+    #     Bar plot of Part_of_community answer shares for the ordered scale
+    #     from 'No, not at all' to 'Yes, definitely'. Other answers are ignored.
+    #     """
+    #     filtered = self.df[self.df['Part_of_community'].isin(COMMUNITY_ORDER)]
+    #     shares = (
+    #         filtered['Part_of_community']
+    #         .value_counts()
+    #         .reindex(COMMUNITY_ORDER, fill_value=0)
+    #         / len(filtered)
+    #     )
 
-        fig, ax = plt.subplots(figsize=(10, 5))
-        ax.bar(shares.index, shares.values)
-        ax.set_ylim(0.0, 1.0)
-        ax.set_yticks([i / 10 for i in range(11)])
-        ax.set_ylabel('Share of answers')
-        ax.set_xlabel('Part of community')
-        ax.set_title('Part_of_community answer distribution')
-        plt.xticks(rotation=30, ha='right')
-        plt.tight_layout()
-        plt.show()
-        return shares
+    #     fig, ax = plt.subplots(figsize=(10, 5))
+    #     ax.bar(shares.index, shares.values)
+    #     ax.set_ylim(0.0, 1.0)
+    #     ax.set_yticks([i / 10 for i in range(11)])
+    #     ax.set_ylabel('Share of answers')
+    #     ax.set_xlabel('Part of community')
+    #     ax.set_title('Part_of_community answer distribution')
+    #     plt.xticks(rotation=30, ha='right')
+    #     plt.tight_layout()
+    #     plt.show()
+    #     return shares
+
+    def plot_column(self, column_name: str, order: list):
+            """
+            Bar plot of Part_of_community answer shares for the ordered scale
+            from 'No, not at all' to 'Yes, definitely'. Other answers are ignored.
+            """
+            filtered = self.df[self.df[column_name].isin(order)]
+            shares = (
+                filtered[column_name]
+                .value_counts()
+                .reindex(order, fill_value=0)
+                / len(filtered)
+            )
+    
+            fig, ax = plt.subplots(figsize=(10, 5))
+            ax.bar(shares.index, shares.values)
+            ax.set_ylim(0.0, 1.0)
+            ax.set_yticks([i / 10 for i in range(11)])
+            ax.set_ylabel('Share of answers')
+            ax.set_xlabel(f'{column_name}')
+            ax.set_title(f'{column_name} answer distribution')
+            plt.xticks(rotation=30, ha='right')
+            plt.tight_layout()
+            plt.show()
+            return shares
 
     def plot_education_level(self):
         """
