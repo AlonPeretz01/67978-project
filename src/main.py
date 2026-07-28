@@ -8,6 +8,25 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 PROJECT_DATA_DIR = os.path.join(PROJECT_ROOT, 'project_data')
 YEARS = ['2020', '2021', '2022']
 
+PARTICIPATION_ORDER = [
+    'nan',
+    'Never participated',
+    'Once per month or less',
+    'Few times per month',
+    'Weekly',
+    'Daily',
+]
+
+COMMUNITY_ORDER = [
+    'No, not at all',
+    'No, not really',
+    'Not sure',
+    'Neutral',
+    'Yes, somewhat',
+    'Yes, definitely',
+]
+
+
 
 def load_and_harmonize_year(year):
     """Load survey_results_public for a year and apply schema harmonization."""
@@ -38,3 +57,11 @@ def combine_post_corona_datasets():
 if __name__ == '__main__':
     df = combine_post_corona_datasets()
     post_corona = Post_Corona(df)
+    post_corona.age_union()
+    post_corona.drop_all_nan_rows()
+    post_corona.change_education_level_names()
+    post_corona.change_participation_names()
+    post_corona.fill_student_unemployed_compensation()
+    # post_corona.plot_compare_answer_with_column('Part_of_community', 'Yes, definitely','Participates_in_questions', )
+    post_corona.plot_stacked_by_columns('Part_of_community', 'Participates_in_questions', 
+                                        COMMUNITY_ORDER, PARTICIPATION_ORDER)

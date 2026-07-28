@@ -184,12 +184,10 @@ class Post_Corona:
     def change_participation_names(self):
         """Changing names of answers in the participation column."""
         df = self.df.copy()
-        col_name = 'SOPartFreq'
+        col_name = 'Participates_in_questions'
         participation_map = {
             "I have never participated in Q&A on Stack Overflow": "Never participated",
             "Less than once per month or monthly": "Once per month or less",
-            "Infrequently, less than once per year": "Once per month or less",
-            "Less than once every 2 - 3 months": "Once per month or less",
             "A few times per month or weekly": "Few times per month",
             "A few times per week": "Weekly",
             "Daily or almost daily": "Daily",
@@ -322,12 +320,12 @@ class Post_Corona:
         """
         filtered = self.df[
             self.df['Age'].isin(AGE_BINS_ORDER)
-            & self.df['SOPartFreq'].isin(PARTICIPATION_ORDER)
+            & self.df['Participates_in_questions'].isin(PARTICIPATION_ORDER)
         ].copy()
         filtered['Age_short'] = filtered['Age'].map(AGE_SHORT_LABELS)
 
         shares = (
-            pd.crosstab(filtered['Age_short'], filtered['SOPartFreq'], normalize='index')
+            pd.crosstab(filtered['Age_short'], filtered['Participates_in_questions'], normalize='index')
             .reindex(index=AGE_SHORT_ORDER, columns=PARTICIPATION_ORDER, fill_value=0.0)
         )
 
@@ -354,6 +352,89 @@ class Post_Corona:
         ax.set_xlabel('Age group')
         ax.set_title('Q&A participation by age group')
         ax.legend(title='Participation', bbox_to_anchor=(1.02, 1), loc='upper left')
+        plt.tight_layout()
+        plt.show()
+        return shares
+
+    def compare_answer_with_column(self, columnA: str, answerA: str, columnB: str):
+        """condenses dataset to those who gave a specific answer in columnA, and then 
+        removes all columns except columnB. Its usage is to see correlation between
+        columns"""
+        only_answer = self.df[self.df[columnA] == answerA]
+        corr_vec = only_answer[only_answer[columnB].notna()]
+        return corr_vec
+
+    def plot_compare_answer_with_column(self, columnA: str, answerA: str, columnB: str):
+        """
+        Filter by `columnA == answerA`, then plot the percentage distribution
+        of non-null answers in `columnB`.
+        """
+        corr_df = self.compare_answer_with_column(columnA, answerA, columnB)
+        counts = corr_df[columnB].value_counts()
+        shares = counts / len(corr_df)
+
+        fig, ax = plt.subplots(figsize=(11, 5))
+        ax.bar(range(len(shares)), shares.values)
+        ax.set_xticks(range(len(shares)))
+        ax.set_xticklabels(shares.index, rotation=45, ha='right')
+        ax.set_ylim(0.0, 1.0)
+        ax.set_yticks([i / 10 for i in range(11)])
+        ax.set_ylabel('Percentage of filtered rows')
+        ax.set_xlabel(columnB)
+        ax.set_title(f'{columnB} distribution for {columnA} = {answerA}')
+        plt.tight_layout()
+        plt.show()
+        return shares
+
+    def plot_stacked_by_columns(self, columnA: str, columnB: str, orderA=None, orderB=None):
+        """
+        Create a stacked bar plot where x-axis is `columnB`, each bar sums to 1,
+        and the stacks are the different answers in `columnA`.
+        If provided, `orderA` controls stack order and `orderB` controls x-axis order.
+        """
+        filtered = self.df[
+            self.df[columnA].notna()
+            & self.df[columnB].notna()
+        ].copy()
+
+        shares = pd.crosstab(
+            filtered[columnB],
+            filtered[columnA],
+            normalize='index',
+        )
+
+        if orderB is not None:
+            remaining_b = [value for value in shares.index if value not in orderB]
+            shares = shares.reindex(list(orderB) + remaining_b, fill_value=0.0)
+
+        if orderA is not None:
+            remaining_a = [value for value in shares.columns if value not in orderA]
+            shares = shares.reindex(columns=list(orderA) + remaining_a, fill_value=0.0)
+
+        fig, ax = plt.subplots(figsize=(12, 6))
+        bottom = pd.Series(0.0, index=shares.index)
+        x = range(len(shares.index))
+        cmap = plt.get_cmap('tab20')
+
+        for idx, answer in enumerate(shares.columns):
+            values = shares[answer]
+            ax.bar(
+                x,
+                values,
+                bottom=bottom,
+                label=answer,
+                color=cmap(idx % cmap.N),
+            )
+            bottom = bottom + values
+
+        ax.set_xticks(list(x))
+        ax.set_xticklabels(shares.index, rotation=45, ha='right')
+        ax.set_ylim(0.0, 1.0)
+        ax.set_yticks([i / 10 for i in range(11)])
+        ax.set_ylabel('Percentage')
+        ax.set_xlabel(columnB)
+        ax.set_title(f'{columnA} distribution within {columnB}')
+        ax.legend(title=columnA, bbox_to_anchor=(1.02, 1), loc='upper left')
         plt.tight_layout()
         plt.show()
         return shares
