@@ -47,6 +47,13 @@ involves reconciling these differences into a consistent, analysis-ready schema.
 ├── requirements.txt        # Python dependencies
 ├── data/                   # Local-only folder for raw/processed survey CSVs (gitignored)
 │   ├── raw/                # Untouched yearly survey downloads, one subfolder per year
+│   │   ├── 2011/
+│   │   │   └── survey_results_public.csv
+│   │   ├── 2012/
+│   │   │   └── survey_results_public.csv
+│   │   ├── ...
+│   │   └── 2025/
+│   │       └── survey_results_public.csv
 │   ├── clean/               # Per-year output of the cleaning step
 │   └── processed/           # Final harmonized dataset spanning all years
 ├── notebooks/              # Jupyter notebooks for exploratory analysis and visualizations
