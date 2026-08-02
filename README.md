@@ -68,17 +68,17 @@ involves reconciling these differences into a consistent, analysis-ready schema.
 
 Each subfolder contains its own `README.md` explaining its purpose in more detail.
 
-## Running the Cleaning & Harmonization Pipeline
+## Running the Pipelines
 
-The pipeline turns the raw, per-year survey downloads in `data/raw/` into a single
-longitudinal dataset in `data/processed/`, in two steps:
+All entry points resolve `data/raw/` relative to the repository root and expect each input at
+`data/raw/<year>/survey_results_public.csv`, so they can be run from any working directory.
 
 1. **Clean** each year's raw CSV — drops unnamed/index columns and columns with more than
    80% missing values, writing one cleaned CSV per year to `data/clean/`:
    ```
    python src/cleaning/clean_data.py
    ```
-2. **Harmonize** the cleaned per-year files — maps each year's differently-named columns
+2. **Harmonize** the raw per-year files — maps each year's differently-named columns
    (e.g. `ConvertedComp` in 2019 vs. `ConvertedCompYearly` in 2022) onto a shared schema
    (`Age`, `Education_Level`, `Years_of_Experience`, `Employment_Status`,
    `Yearly_Compensation`, `Usage_Frequency`, `AI_Tool_Usage`, `AI_Usage_Status`), then
@@ -87,8 +87,14 @@ longitudinal dataset in `data/processed/`, in two steps:
    python src/cleaning/data_harmonization.py
    ```
 
-Both scripts resolve `data/` relative to the repository root, so they can be run from any
-working directory. Run them in order — harmonization depends on `clean_data.py`'s output.
+The harmonization step reads raw inputs directly and does not depend on the optional cleaning output.
+
+For the post-corona analysis, load and harmonize 2020–2022 and run the `Post_Corona`
+preprocessing flow with:
+
+```
+python src/main.py
+```
 
 ## Getting the Data
 

@@ -4,8 +4,6 @@ import pandas as pd
 from cleaning.data_harmonization import harmonize_schema
 from analyze_post_corona import Post_Corona
 
-# PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-# PROJECT_DATA_DIR = os.path.join(PROJECT_ROOT, 'project_data')
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 RAW_DIR = os.path.join(PROJECT_ROOT, 'data', 'raw')
 YEARS = ['2020', '2021', '2022']
@@ -52,7 +50,8 @@ EDUCATION_IGNORE = {'Something else'}
 
 def load_and_harmonize_year(year):
     """Load survey_results_public for a year and apply schema harmonization."""
-    file_path = os.path.join(RAW_DIR, year, 'survey_results_public.csv')
+    year = str(year)
+    file_path = os.path.join(RAW_DIR, str(year), 'survey_results_public.csv')
     print(f"Loading {year} from {file_path}...")
 
     try:

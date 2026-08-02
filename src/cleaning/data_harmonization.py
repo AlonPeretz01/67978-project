@@ -1,10 +1,9 @@
 import os
-import re
 import pandas as pd
 
 # Define paths
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-CLEAN_DIR = os.path.join(PROJECT_ROOT, 'data', 'clean')
+RAW_DIR = os.path.join(PROJECT_ROOT, 'data', 'raw')
 PROCESSED_DIR = os.path.join(PROJECT_ROOT, 'data', 'processed')
 
 # Core schema - target columns to retain across all years
@@ -167,29 +166,22 @@ def run_harmonization_pipeline():
     
     print("Starting Data Harmonization Process...")
     
-    # Iterate through all directories and files in the clean data directory
-    for root, dirs, files in os.walk(CLEAN_DIR):
-        for file in files:
-            if file.endswith('.csv'):
-                # Extract the year from the file or directory name
-                match = re.search(r'20[1-2][0-9]', file)
-                if not match:
-                    match = re.search(r'20[1-2][0-9]', root)
-                    
-                if match:
-                    year = match.group(0)
-                    file_path = os.path.join(root, file)
-                    
-                    print(f"Harmonizing {year}...")
-                    
-                    # Read the cleaned CSV file
-                    df = pd.read_csv(file_path, low_memory=False)
-                    
-                    # Apply the harmonization function
-                    harmonized_df = harmonize_schema(df, year)
-                    harmonized_dfs.append(harmonized_df)
-                    
-                    print(f"  -> Extracted {harmonized_df.shape[1]} core columns.")
+    for year in sorted(schema_mapping):
+        file_path = os.path.join(RAW_DIR, str(year), 'survey_results_public.csv')
+        if not os.path.isfile(file_path):
+            print(f"Skipping {year}: {file_path} was not found.")
+            continue
+
+        print(f"Harmonizing {year}...")
+        try:
+            df = pd.read_csv(file_path, low_memory=False)
+        except UnicodeDecodeError:
+            df = pd.read_csv(file_path, low_memory=False, encoding='latin1')
+
+        harmonized_df = harmonize_schema(df, str(year))
+        harmonized_dfs.append(harmonized_df)
+
+        print(f"  -> Extracted {harmonized_df.shape[1]} core columns.")
 
     # Concatenate all DataFrames into a single central dataset
     if harmonized_dfs:
@@ -203,7 +195,7 @@ def run_harmonization_pipeline():
         print(f"\nSuccess! Final dataset saved to: {out_path}")
         print(f"Total rows: {final_dataset.shape[0]}, Total columns: {final_dataset.shape[1]}")
     else:
-        print("No cleaned CSV files were found to harmonize.")
+        print("No raw survey CSV files were found to harmonize.")
 
 if __name__ == "__main__":
     run_harmonization_pipeline()
