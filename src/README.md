@@ -1,13 +1,9 @@
-# src/
+# Source package
 
-Clean, reusable Python modules for the project: data loading, cleaning, schema
-reconciliation across survey years, and processing pipelines.
+`src` contains reusable, side-effect-free project modules. Root `main.py` is
+the only executable entry point and orchestrates every stage.
 
-Code here should be stable and importable from notebooks (e.g. `from src.data_loader import
-load_survey_year`), unlike the exploratory code in `notebooks/`.
-
-## cleaning/
-
-The data cleaning and schema harmonization pipeline (`clean_data.py` and
-`data_harmonization.py`). See the root [README.md](../README.md#running-the-cleaning--harmonization-pipeline)
-for how to run it.
+- `analysis/`: dataset audit, missing-data, post-corona, and structural-break analysis.
+- `cleaning/`: DataFrame cleaning and schema harmonization functions.
+- `models/`: demographic summaries and engagement-model functions.
+- `visualization/`: functions that save figures supplied by the orchestrator.

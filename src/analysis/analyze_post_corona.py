@@ -98,7 +98,7 @@ class Post_Corona:
                 return '55-64 years old'
             return '65 years or older'
 
-        mask_2020 = df['Year'] == '2020'
+        mask_2020 = pd.to_numeric(df['Year'], errors='coerce').eq(2020)
         df.loc[mask_2020, 'Age'] = df.loc[mask_2020, 'Age'].map(to_age_group)
         df['Age'] = df['Age'].fillna('Prefer not to say')
         self.df = df
@@ -327,6 +327,45 @@ class Post_Corona:
         plt.tight_layout()
         plt.show()
         return shares
+
+
+def prepare_post_corona_data(dataframe: pd.DataFrame) -> pd.DataFrame:
+    """Return a consistently labelled 2020–2022 analysis subset.
+
+    The function performs the existing post-corona transformations without
+    displaying figures or reading files. It is intended for orchestration by
+    root ``main.py``.
+    """
+    required_columns = {
+        "Year",
+        "Age",
+        "Education_Level",
+        "Employment_Status",
+        "Yearly_Compensation",
+        "Participates_in_questions",
+        "Visits_SO_freq",
+    }
+    missing_columns = required_columns.difference(dataframe.columns)
+    if missing_columns:
+        raise ValueError(
+            "Post-corona analysis is missing required columns: "
+            + ", ".join(sorted(missing_columns))
+        )
+
+    years = pd.to_numeric(dataframe["Year"], errors="coerce")
+    subset = dataframe.loc[years.between(2020, 2022)].copy()
+    if subset.empty:
+        raise ValueError("No rows are available for the 2020–2022 analysis period.")
+
+    analysis = Post_Corona(subset)
+    analysis.age_union()
+    analysis.drop_all_nan_rows()
+    analysis.unite_employement()
+    analysis.change_education_level_names()
+    analysis.change_participation_names()
+    analysis.change_visiting_names()
+    analysis.fill_student_unemployed_compensation()
+    return analysis.df
 
     def plot_fulltime_participation(self, employment_status: str):
         """

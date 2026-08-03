@@ -1,5 +1,8 @@
 import os
+
 import pandas as pd
+
+from src.cleaning.clean_data import YEARS, clean_survey_data
 
 # Define paths
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -146,17 +149,27 @@ def harmonize_schema(df, year):
     """
     Maps DataFrame columns based on the survey year and retains only the core columns.
     """
-    # Rename columns if a mapping exists for the current year
-    if year in schema_mapping:
-        df = df.rename(columns=schema_mapping[year])
-    
-    # Add survey year as a column for longitudinal analysis
-    df['Year'] = year
-    
-    # Keep only the core columns that exist in the current DataFrame
-    existing_targets = [col for col in TARGET_COLUMNS if col in df.columns]
-    
-    return df[existing_targets]
+    year = str(year)
+    mapping = schema_mapping.get(year, {})
+    harmonized = pd.DataFrame(index=df.index)
+    harmonized['Year'] = year
+
+    for target in TARGET_COLUMNS[1:]:
+        source_columns = [
+            source for source, mapped_target in mapping.items()
+            if mapped_target == target and source in df.columns
+        ]
+        if target in df.columns and target not in source_columns:
+            source_columns.insert(0, target)
+
+        if len(source_columns) == 1:
+            harmonized[target] = df[source_columns[0]]
+        elif len(source_columns) > 1:
+            harmonized[target] = df[source_columns].bfill(axis=1).iloc[:, 0]
+        else:
+            harmonized[target] = pd.NA
+
+    return harmonized.reindex(columns=TARGET_COLUMNS)
 
 def run_harmonization_pipeline():
     if not os.path.exists(PROCESSED_DIR):
@@ -166,10 +179,13 @@ def run_harmonization_pipeline():
     
     print("Starting Data Harmonization Process...")
     
-    for year in sorted(schema_mapping):
-        file_path = os.path.join(RAW_DIR, str(year), 'survey_results_public.csv')
-        if not os.path.isfile(file_path):
-            print(f"Skipping {year}: {file_path} was not found.")
+    cleaned_paths = clean_survey_data()
+
+    for year in YEARS:
+        year = str(year)
+        file_path = cleaned_paths.get(year)
+        if file_path is None:
+            print(f"Skipping harmonization for {year}: no cleaned CSV was generated.")
             continue
 
         print(f"Harmonizing {year}...")
@@ -197,5 +213,3 @@ def run_harmonization_pipeline():
     else:
         print("No raw survey CSV files were found to harmonize.")
 
-if __name__ == "__main__":
-    run_harmonization_pipeline()

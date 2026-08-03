@@ -3,19 +3,78 @@ import pandas as pd
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 RAW_DIR = os.path.join(PROJECT_ROOT, 'data', 'raw')
-CLEAN_DIR = os.path.join(PROJECT_ROOT, 'data', 'clean')
+CLEAN_DIR = os.path.join(PROJECT_ROOT, 'data', 'processed', 'clean')
 THRESHOLD = 80.0
+YEARS = range(2011, 2026)
+
+
+def find_raw_survey_file(year, raw_dir=RAW_DIR):
+    """Return the canonical survey CSV, with support for legacy archive names."""
+    year_dir = os.path.join(raw_dir, str(year))
+    canonical_path = os.path.join(year_dir, 'survey_results_public.csv')
+    if os.path.isfile(canonical_path):
+        return canonical_path
+
+    if not os.path.isdir(year_dir):
+        return None
+
+    candidates = []
+    for root, _, files in os.walk(year_dir):
+        for filename in files:
+            lower_name = filename.lower()
+            if not lower_name.endswith('.csv'):
+                continue
+            if any(term in lower_name for term in ('schema', 'crosswalk', 'question')):
+                continue
+            candidates.append(os.path.join(root, filename))
+
+    return sorted(candidates)[0] if candidates else None
+
+
+def clean_dataframe(
+    dataframe: pd.DataFrame,
+    *,
+    missing_column_threshold: float | None = None,
+) -> pd.DataFrame:
+    """Return a de-duplicated copy with unnamed and optional sparse columns removed.
+
+    Args:
+        dataframe: Input dataset to clean.
+        missing_column_threshold: Optional percentage above which columns are
+            removed. ``None`` preserves sparse analytical columns.
+    """
+    if dataframe.empty:
+        raise ValueError("Cannot clean an empty DataFrame.")
+    if missing_column_threshold is not None and not 0 <= missing_column_threshold <= 100:
+        raise ValueError("missing_column_threshold must be between 0 and 100.")
+
+    cleaned = dataframe.copy()
+    unnamed_columns = [
+        column for column in cleaned.columns if "unnamed" in str(column).lower()
+    ]
+    cleaned = cleaned.drop(columns=unnamed_columns)
+    cleaned = cleaned.drop_duplicates().reset_index(drop=True)
+
+    if missing_column_threshold is not None:
+        missing_percentages = cleaned.isna().mean().mul(100)
+        sparse_columns = missing_percentages[
+            missing_percentages > missing_column_threshold
+        ].index
+        cleaned = cleaned.drop(columns=sparse_columns)
+
+    return cleaned
+
 
 def clean_survey_data():
     if not os.path.exists(CLEAN_DIR):
         os.makedirs(CLEAN_DIR)
         
-    for year in sorted(os.listdir(RAW_DIR)):
-        if not (year.isdigit() and len(year) == 4):
-            continue
+    cleaned_paths = {}
 
-        file_path = os.path.join(RAW_DIR, str(year), 'survey_results_public.csv')
-        if not os.path.isfile(file_path):
+    for year in YEARS:
+        file_path = find_raw_survey_file(year)
+        if file_path is None:
+            print(f"Skipping {year}: no survey results CSV was found.")
             continue
 
         print(f"Cleaning {year}...")
@@ -25,19 +84,20 @@ def clean_survey_data():
         except UnicodeDecodeError:
             df = pd.read_csv(file_path, low_memory=False, encoding='latin1')
 
-        unnamed_cols = [c for c in df.columns if 'unnamed' in str(c).lower()]
-        df.drop(columns=unnamed_cols, inplace=True)
-
-        null_pct = (df.isnull().sum() / len(df)) * 100
-        cols_to_drop = null_pct[null_pct > THRESHOLD].index
-        df.drop(columns=cols_to_drop, inplace=True)
+        original_columns = df.columns
+        df = clean_dataframe(df, missing_column_threshold=THRESHOLD)
+        dropped_columns = set(original_columns).difference(df.columns)
 
         out_dir = os.path.join(CLEAN_DIR, str(year))
         os.makedirs(out_dir, exist_ok=True)
         out_path = os.path.join(out_dir, f'survey_results_public_{year}_cleaned.csv')
 
         df.to_csv(out_path, index=False)
-        print(f"Saved {year} | Dropped {len(unnamed_cols)} Unnamed, {len(cols_to_drop)} >{THRESHOLD}% nulls. Remaining: {df.shape[1]} cols")
+        cleaned_paths[str(year)] = out_path
+        print(
+            f"Saved {year} | Dropped {len(dropped_columns)} columns. "
+            f"Remaining: {df.shape[1]} cols"
+        )
 
         print(f"\n--- {year} Matching Columns ---")
         target_keywords = ['age', 'year', 'ed', 'employ', 'comp', 'salary', 'ai', 'stack', 'occup']
@@ -45,6 +105,4 @@ def clean_survey_data():
         for col in matching_cols:
             print(f"  - {col}")
 
-if __name__ == "__main__":
-    clean_survey_data()
-    print("\nData cleaning complete.")
+    return cleaned_paths
