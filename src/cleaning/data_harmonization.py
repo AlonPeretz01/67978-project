@@ -1,4 +1,5 @@
 import os
+import logging
 
 import pandas as pd
 
@@ -8,6 +9,7 @@ from src.cleaning.clean_data import YEARS, clean_survey_data
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 RAW_DIR = os.path.join(PROJECT_ROOT, 'data', 'raw')
 PROCESSED_DIR = os.path.join(PROJECT_ROOT, 'data', 'processed')
+LOGGER = logging.getLogger(__name__)
 
 # Core schema - target columns to retain across all years
 TARGET_COLUMNS = [
@@ -51,15 +53,17 @@ schema_mapping = {
     },
     '2015': {
         'Age': 'Age',
-        'EmploymentStatus': 'Employment_Status',
-        'Involved': 'Employment_Status', 
-        'YearsCode': 'Years_of_Experience',
-        'Salary': 'Yearly_Compensation',
+        'Years IT / Programming Experience': 'Years_of_Experience',
+        'Occupation': 'Employment_Status',
+        'Employment Status': 'Employment_Status',
+        'Compensation': 'Yearly_Compensation',
+        'Compensation: midpoint': 'Yearly_Compensation',
     },
     '2016': {
         'age_midpoint': 'Age',
         'occupation': 'Employment_Status',
         'education': 'Education_Level',
+        'experience_range': 'Years_of_Experience',
         'salary_midpoint': 'Yearly_Compensation',
     },
     '2017': {
@@ -168,6 +172,13 @@ def harmonize_schema(df, year):
             harmonized[target] = df[source_columns].bfill(axis=1).iloc[:, 0]
         else:
             harmonized[target] = pd.NA
+
+        if year in {'2015', '2016'} and target == 'Years_of_Experience' and source_columns:
+            LOGGER.info(
+                "Harmonized %s professional experience from observed raw column(s): %s",
+                year,
+                ', '.join(source_columns),
+            )
 
     return harmonized.reindex(columns=TARGET_COLUMNS)
 

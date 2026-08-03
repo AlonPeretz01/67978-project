@@ -1,11 +1,14 @@
 import os
+import logging
 import pandas as pd
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 RAW_DIR = os.path.join(PROJECT_ROOT, 'data', 'raw')
-CLEAN_DIR = os.path.join(PROJECT_ROOT, 'data', 'processed', 'clean')
+CLEAN_DIR = os.path.join(PROJECT_ROOT, 'data', 'clean')
 THRESHOLD = 80.0
 YEARS = range(2011, 2026)
+MULTIROW_HEADER_YEARS = {2015: 1}
+LOGGER = logging.getLogger(__name__)
 
 
 def find_raw_survey_file(year, raw_dir=RAW_DIR):
@@ -79,10 +82,18 @@ def clean_survey_data():
 
         print(f"Cleaning {year}...")
 
+        read_options = {"low_memory": False}
+        if year in MULTIROW_HEADER_YEARS:
+            read_options["header"] = MULTIROW_HEADER_YEARS[year]
+            LOGGER.info(
+                "Reading %s survey with row %s as its schema header.",
+                year,
+                MULTIROW_HEADER_YEARS[year] + 1,
+            )
         try:
-            df = pd.read_csv(file_path, low_memory=False)
+            df = pd.read_csv(file_path, **read_options)
         except UnicodeDecodeError:
-            df = pd.read_csv(file_path, low_memory=False, encoding='latin1')
+            df = pd.read_csv(file_path, encoding="latin1", **read_options)
 
         original_columns = df.columns
         df = clean_dataframe(df, missing_column_threshold=THRESHOLD)

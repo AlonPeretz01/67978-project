@@ -9,8 +9,8 @@ with a script-only data-science pipeline.
 .
 ├── data/
 │   ├── raw/                         # Original datasets, grouped by survey year
-│   └── processed/                   # Cleaned and harmonized data
-│       ├── clean/                   # Per-year cleaned datasets
+│   ├── clean/                       # Per-year cleaned datasets
+│   └── processed/                   # Harmonized data
 │       └── harmonized_stack_overflow_2011_2025.csv
 ├── outputs/
 │   └── figures/                     # Pipeline-generated figures

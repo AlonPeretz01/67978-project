@@ -164,6 +164,33 @@ def build_demographic_summary(data: pd.DataFrame) -> pd.DataFrame:
     summary = summary.reindex(range(YEAR_MIN, DEMOGRAPHIC_YEAR_MAX + 1))
     summary.index.name = "Year"
 
+    # Proxy-based harmonization is preferred. Only if the two historically
+    # problematic years still have no usable experience values do we fill the
+    # *aggregated* junior time series by interpolation.
+    fallback_years = [
+        year
+        for year in (2015, 2016)
+        if year in summary.index and pd.isna(summary.loc[year, "early_career_share"])
+    ]
+    if fallback_years:
+        interpolated_shares = summary[["early_career_share"]].interpolate(
+            method="linear", limit_area="inside"
+        )
+        resolved_years = [
+            year
+            for year in fallback_years
+            if pd.notna(interpolated_shares.loc[year, "early_career_share"])
+        ]
+        summary.loc[resolved_years, "early_career_share"] = interpolated_shares.loc[
+            resolved_years, "early_career_share"
+        ]
+        if resolved_years:
+            LOGGER.info(
+                "Professional-experience proxies were unavailable for year(s) %s; "
+                "applied linear interpolation to the aggregated Junior_Proportion series as a fallback.",
+                ", ".join(map(str, resolved_years)),
+            )
+
     absent = summary.index[summary["valid_experience_responses"].isna()].tolist()
     if absent:
         LOGGER.warning(

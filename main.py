@@ -11,7 +11,10 @@ import pandas as pd
 from src.analysis.analyze_nulls import summarize_null_percentages
 from src.analysis.analyze_post_corona import prepare_post_corona_data
 from src.analysis.audit_dataset import audit_dataset
-from src.analysis.structural_break import detect_early_career_structural_breaks
+from src.analysis.structural_break import (
+    analyze_theoretical_slope_changes,
+    format_sensitivity_table,
+)
 from src.cleaning.clean_data import clean_dataframe
 from src.models.community_demographics_ml import (
     build_demographic_summary,
@@ -64,13 +67,10 @@ def run_pipeline(dataset_path: Path = PROCESSED_DATASET) -> dict[str, Any]:
         .loc[:, ["Survey_Year", "Junior_Proportion"]]
         .dropna()
     )
-    break_years, break_figure = detect_early_career_structural_breaks(
+    structural_break_results, break_figures = analyze_theoretical_slope_changes(
         structural_break_input,
-    )
-    break_figure.savefig(
-        FIGURES_DIRECTORY / "early_career_structural_breaks.png",
-        dpi=300,
-        bbox_inches="tight",
+        metric_columns=["Junior_Proportion"],
+        output_directory=FIGURES_DIRECTORY,
     )
 
     return {
@@ -79,7 +79,8 @@ def run_pipeline(dataset_path: Path = PROCESSED_DATASET) -> dict[str, Any]:
         "post_corona_data": post_corona_dataframe,
         "demographic_summary": demographic_summary,
         "model_importances": model_importances,
-        "structural_break_years": break_years,
+        "structural_break_results": structural_break_results,
+        "structural_break_figures": break_figures,
     }
 
 
@@ -98,7 +99,11 @@ def main() -> int:
         audit_report["rows"],
         audit_report["columns"],
     )
-    logging.info("Structural break years: %s", results["structural_break_years"])
+    sensitivity_table = format_sensitivity_table(results["structural_break_results"])
+    logging.info(
+        "Piecewise-regression sensitivity analysis:\n%s",
+        sensitivity_table.to_string(index=False),
+    )
     logging.info("Saved figures to %s", FIGURES_DIRECTORY.relative_to(PROJECT_ROOT))
     return 0
 
