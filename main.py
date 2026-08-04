@@ -9,7 +9,15 @@ from typing import Any
 import pandas as pd
 
 from src.analysis.analyze_nulls import summarize_null_percentages
-from src.analysis.analyze_post_corona import prepare_post_corona_data
+from src.analysis.analyze_post_corona import (
+    AGE_BINS_ORDER,
+    PARTICIPATION_ORDER,
+    plot_age_participation_stacked,
+    plot_compare_answer_with_column,
+    plot_fulltime_participation,
+    plot_stacked_by_columns,
+    prepare_post_corona_data,
+)
 from src.analysis.audit_dataset import audit_dataset
 from src.analysis.structural_break import (
     analyze_theoretical_slope_changes,
@@ -59,6 +67,30 @@ def run_pipeline(dataset_path: Path = PROCESSED_DATASET) -> dict[str, Any]:
     plot_feature_importance(
         model_importances,
         FIGURES_DIRECTORY / "feature_importance_so_engagement.png",
+    )
+    plot_fulltime_participation(
+        post_corona_dataframe,
+        FIGURES_DIRECTORY / "post_corona_fulltime_participation.png",
+        employment_status="Employed full-time",
+    )
+    plot_age_participation_stacked(
+        post_corona_dataframe,
+        FIGURES_DIRECTORY / "post_corona_age_participation.png",
+    )
+    plot_compare_answer_with_column(
+        post_corona_dataframe,
+        FIGURES_DIRECTORY / "post_corona_fulltime_participation_distribution.png",
+        columnA="Employment_Status",
+        answerA="Employed full-time",
+        columnB="Participates_in_questions",
+    )
+    plot_stacked_by_columns(
+        post_corona_dataframe,
+        FIGURES_DIRECTORY / "post_corona_participation_by_age.png",
+        columnA="Participates_in_questions",
+        columnB="Age",
+        orderA=PARTICIPATION_ORDER,
+        orderB=AGE_BINS_ORDER,
     )
 
     structural_break_input = (

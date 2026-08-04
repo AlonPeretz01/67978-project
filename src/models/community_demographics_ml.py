@@ -46,6 +46,13 @@ FEATURE_LABELS = {
     "Education_Level": "Education level",
 }
 
+PRIMARY_COLOR = "#1F4E79"
+SECONDARY_COLOR = "#E69F00"
+TERTIARY_COLOR = "#009E73"
+NEUTRAL_COLOR = "#4D4D4D"
+GRID_COLOR = "#D9D9D9"
+EXPORT_DPI = 200
+
 
 def experience_interval(value: object) -> tuple[float, float] | None:
     """Return inclusive bounds for a harmonized experience response.
@@ -202,14 +209,13 @@ def build_demographic_summary(data: pd.DataFrame) -> pd.DataFrame:
 
 def plot_demographic_shift(summary: pd.DataFrame, output_path: Path) -> None:
     """Plot the demographic 'scissor effect' on a single percentage axis."""
-    plt.style.use("seaborn-v0_8-whitegrid")
     fig, axis = plt.subplots(figsize=(15, 8.5))
     years = summary.index.to_numpy()
 
-    junior_color = "#D1492E"
-    senior_color = "#243B7A"
-    mid_career_color = "#8A7B5A"
-    reference_color = "#3B3B3B"
+    junior_color = SECONDARY_COLOR
+    senior_color = PRIMARY_COLOR
+    mid_career_color = TERTIARY_COLOR
+    reference_color = NEUTRAL_COLOR
 
     line_junior = axis.plot(
         years,
@@ -239,9 +245,9 @@ def plot_demographic_shift(summary: pd.DataFrame, output_path: Path) -> None:
         alpha=0.9,
         label="Mid-career (4–7 years)",
     )[0]
-    axis.set_xlabel("Survey year", fontsize=14, weight="bold")
-    axis.set_ylabel("Percentage of Survey Respondents (%)", fontsize=14, weight="bold")
-    axis.tick_params(axis="both", labelsize=12)
+    axis.set_xlabel("Survey year", fontsize=13)
+    axis.set_ylabel("Survey respondents (%)", fontsize=13)
+    axis.tick_params(axis="both", labelsize=11)
     axis.set_xticks(years)
     axis.set_xlim(YEAR_MIN - 0.35, DEMOGRAPHIC_YEAR_MAX + 0.35)
     largest_share = (
@@ -266,25 +272,25 @@ def plot_demographic_shift(summary: pd.DataFrame, output_path: Path) -> None:
         0.97,
         "ChatGPT / LLM assistants",
         transform=axis.get_xaxis_transform(),
-        fontsize=12,
+        fontsize=11,
         ha="left",
         va="top",
         color=reference_color,
     )
 
     axis.set_title(
-        "Demographic Evolution & The Experience 'Scissor Effect' (2011-2024)",
-        fontsize=16,
+        "Early-career and senior respondent shares diverged over time",
+        fontsize=17,
         pad=18,
-        weight="bold",
+        weight="semibold",
     )
     axis.legend(
         handles=[line_junior, line_senior, line_mid_career, reference],
         loc="upper left",
-        fontsize=12,
-        frameon=True,
+        fontsize=11,
+        frameon=False,
     )
-    axis.grid(axis="y", color="#D7D7D7", linewidth=0.9, alpha=0.8)
+    axis.grid(axis="y", color=GRID_COLOR, linewidth=0.9, alpha=0.8)
     axis.grid(axis="x", visible=False)
     axis.spines[["top", "right"]].set_visible(False)
 
@@ -295,11 +301,11 @@ def plot_demographic_shift(summary: pd.DataFrame, output_path: Path) -> None:
         ha="center",
         va="bottom",
         fontsize=10.5,
-        color="#555555",
+        color=NEUTRAL_COLOR,
         style="italic",
     )
     fig.tight_layout(rect=(0, 0.065, 1, 1))
-    fig.savefig(output_path, dpi=300, bbox_inches="tight")
+    fig.savefig(output_path, dpi=EXPORT_DPI, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -429,33 +435,32 @@ def plot_feature_importance(
     """Plot grouped random-forest feature importances."""
     labels = [FEATURE_LABELS.get(feature, feature) for feature in importances.index]
 
-    plt.style.use("seaborn-v0_8-whitegrid")
     fig, axis = plt.subplots(figsize=(13, 8))
     bars = axis.barh(
         labels,
         importances.values,
-        color="#276FBF",
+        color=PRIMARY_COLOR,
         edgecolor="white",
     )
     axis.bar_label(
         bars,
         labels=[f"{value:.3f}" for value in importances.values],
         padding=5,
-        fontsize=12,
+        fontsize=11,
     )
     upper = max(float(importances.max()) * 1.18, 0.1)
     axis.set_xlim(0, upper)
-    axis.set_xlabel("Aggregated random forest importance", fontsize=14)
-    axis.set_ylabel("Predictor", fontsize=14)
-    axis.tick_params(axis="both", labelsize=12)
+    axis.set_xlabel("Aggregated random-forest importance", fontsize=13)
+    axis.set_ylabel("Predictor", fontsize=13)
+    axis.tick_params(axis="both", labelsize=11)
     axis.set_title(
-        "Predictors of Active Stack Overflow Community Engagement",
-        fontsize=16,
+        "Professional experience, compensation, and education predict engagement",
+        fontsize=17,
         pad=18,
-        weight="bold",
+        weight="semibold",
     )
     axis.spines[["top", "right", "left"]].set_visible(False)
     axis.grid(axis="y", visible=False)
     fig.tight_layout()
-    fig.savefig(output_path, dpi=300, bbox_inches="tight")
+    fig.savefig(output_path, dpi=EXPORT_DPI, bbox_inches="tight")
     plt.close(fig)

@@ -14,6 +14,11 @@ from matplotlib.figure import Figure
 
 THEORETICAL_INTERVENTION_YEARS = (2020, 2022)
 DEFAULT_PLOT_DIRECTORY = Path("outputs/figures")
+PRIMARY_COLOR = "#1F4E79"
+SECONDARY_COLOR = "#E69F00"
+NEUTRAL_COLOR = "#4D4D4D"
+GRID_COLOR = "#D9D9D9"
+EXPORT_DPI = 200
 
 
 def analyze_theoretical_slope_changes(
@@ -203,34 +208,46 @@ def _save_slope_change_figures(
 ) -> dict[str, Figure]:
     """Save one clean standalone figure per metric and intervention year."""
     figures: dict[str, Figure] = {}
-    with plt.rc_context({"font.size": 11, "axes.titlesize": 14, "legend.fontsize": 10}):
+    with plt.rc_context(
+        {
+            "font.size": 12,
+            "figure.dpi": 120,
+            "savefig.dpi": EXPORT_DPI,
+            "axes.titlesize": 17,
+            "axes.titleweight": "semibold",
+            "axes.labelsize": 13,
+            "xtick.labelsize": 11,
+            "ytick.labelsize": 11,
+            "legend.fontsize": 11,
+        }
+    ):
         for metric, full_series in series_by_metric.items():
             for knot_year in intervention_years:
                 figure, axis = plt.subplots(figsize=(8, 5.5), constrained_layout=True)
                 axis.plot(
-                    full_series[year_column], full_series[metric], color="#1f4e79",
+                    full_series[year_column], full_series[metric], color=PRIMARY_COLOR,
                     marker="o", linewidth=2, markersize=6, label="Observed data",
                 )
                 axis.axvline(
-                    knot_year, color="red", linestyle="--", linewidth=2,
+                    knot_year, color=NEUTRAL_COLOR, linestyle="--", linewidth=2,
                     label=f"Intervention ({knot_year})",
                 )
                 sample, model = fits[(metric, primary_sample_name, knot_year)]
                 fitted = model.predict(_design_for_years(sample[year_column], knot_year))
                 axis.plot(
-                    sample[year_column], fitted, color="#e76f51", linewidth=2.4,
+                    sample[year_column], fitted, color=SECONDARY_COLOR, linewidth=2.4,
                     label=f"{primary_sample_name} fit",
                 )
                 axis.set_title(
-                    f"{metric.replace('_', ' ')} - Intervention: {knot_year}",
-                    fontweight="bold",
+                    f"Observed {metric.replace('_', ' ')} around the {knot_year} intervention",
+                    fontweight="semibold",
                 )
                 axis.set_xlabel("Survey Year")
                 axis.set_ylabel(metric.replace("_", " "))
-                axis.grid(True, linestyle=":", alpha=0.5)
+                axis.grid(True, color=GRID_COLOR, linestyle=":", alpha=0.7)
                 axis.legend(loc="best", frameon=False)
                 filename = f"{_filename_stem(metric)}_break_{knot_year}.png"
-                figure.savefig(output_directory / filename, dpi=300, bbox_inches="tight")
+                figure.savefig(output_directory / filename, dpi=EXPORT_DPI, bbox_inches="tight")
                 figures[filename] = figure
     return figures
 

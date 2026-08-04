@@ -1,5 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+from pathlib import Path
+from matplotlib.ticker import PercentFormatter
 
 AGE_BINS_ORDER = [
     'Under 18 years old',
@@ -33,6 +35,13 @@ EDUCATION_ORDER = [
 
 EDUCATION_IGNORE = {'Something else'}
 
+PRIMARY_COLOR = '#1F4E79'
+SECONDARY_COLOR = '#E69F00'
+TERTIARY_COLOR = '#009E73'
+QUATERNARY_COLOR = '#CC79A7'
+QUINARY_COLOR = '#56B4E9'
+GRID_COLOR = '#D9D9D9'
+
 PARTICIPATION_ORDER = [
     'Never participated',
     'Once per month or less',
@@ -54,12 +63,20 @@ AGE_SHORT_LABELS = {
 AGE_SHORT_ORDER = ['<18', '18-24', '25-34', '35-44', '45-54', '55-64', '65+']
 
 PARTICIPATION_COLORS = {
-    'Never participated': '#4C78A8',
-    'Once per month or less': '#F58518',
-    'Few times per month': '#54A24B',
-    'Weekly': '#E45756',
-    'Daily': '#B279A2',
+    'Never participated': PRIMARY_COLOR,
+    'Once per month or less': SECONDARY_COLOR,
+    'Few times per month': TERTIARY_COLOR,
+    'Weekly': QUATERNARY_COLOR,
+    'Daily': QUINARY_COLOR,
 }
+
+CATEGORICAL_COLORS = (
+    PRIMARY_COLOR,
+    SECONDARY_COLOR,
+    TERTIARY_COLOR,
+    QUATERNARY_COLOR,
+    QUINARY_COLOR,
+)
 
 
 class Post_Corona:
@@ -290,14 +307,17 @@ class Post_Corona:
                 / len(filtered)
             )
     
-            fig, ax = plt.subplots(figsize=(10, 5))
-            ax.bar(shares.index, shares.values)
+            fig, ax = plt.subplots(figsize=(10, 5.5))
+            ax.bar(shares.index, shares.values, color=PRIMARY_COLOR)
             ax.set_ylim(0.0, 1.0)
-            ax.set_yticks([i / 10 for i in range(11)])
-            ax.set_ylabel('Share of answers')
-            ax.set_xlabel(f'{column_name}')
-            ax.set_title(f'{column_name} answer distribution')
-            plt.xticks(rotation=30, ha='right')
+            ax.yaxis.set_major_formatter(PercentFormatter(1.0, decimals=0))
+            ax.set_ylabel('Share of valid responses', fontsize=13)
+            ax.set_xlabel(column_name, fontsize=13)
+            ax.set_title(f'Distribution of responses: {column_name}', fontsize=17, weight='semibold', pad=14)
+            ax.tick_params(axis='both', labelsize=11)
+            ax.tick_params(axis='x', rotation=30)
+            ax.grid(axis='y', color=GRID_COLOR, linestyle=':', alpha=0.7)
+            ax.set_axisbelow(True)
             plt.tight_layout()
             plt.show()
             return shares
@@ -315,15 +335,18 @@ class Post_Corona:
         extras = [level for level in present.index if level not in EDUCATION_ORDER]
         shares = present.reindex(ordered + extras, fill_value=0) / len(filtered)
 
-        fig, ax = plt.subplots(figsize=(12, 5))
-        ax.bar(range(len(shares)), shares.values)
+        fig, ax = plt.subplots(figsize=(12, 5.5))
+        ax.bar(range(len(shares)), shares.values, color=PRIMARY_COLOR)
         ax.set_xticks(range(len(shares)))
         ax.set_xticklabels(shares.index, rotation=45, ha='right')
         ax.set_ylim(0.0, 0.8)
-        ax.set_yticks([i / 10 for i in range(9)])
-        ax.set_ylabel('Share of answers')
-        ax.set_xlabel('Education level')
-        ax.set_title('Education_Level answer distribution')
+        ax.yaxis.set_major_formatter(PercentFormatter(1.0, decimals=0))
+        ax.set_ylabel('Share of valid responses', fontsize=13)
+        ax.set_xlabel('Education level', fontsize=13)
+        ax.set_title('Education attainment among post-corona survey respondents', fontsize=17, weight='semibold', pad=14)
+        ax.tick_params(axis='both', labelsize=11)
+        ax.grid(axis='y', color=GRID_COLOR, linestyle=':', alpha=0.7)
+        ax.set_axisbelow(True)
         plt.tight_layout()
         plt.show()
         return shares
@@ -367,155 +390,191 @@ def prepare_post_corona_data(dataframe: pd.DataFrame) -> pd.DataFrame:
     analysis.fill_student_unemployed_compensation()
     return analysis.df
 
-    def plot_fulltime_participation(self, employment_status: str):
-        """
-        Bar plot of Participates_in_questions frequency for respondents
-        in employment status x. Ignores NaN. Y-axis is share of that subgroup.
-        """
-        employed = self.df[self.df['Employment_Status'] == employment_status]
-        filtered = employed[employed['Participates_in_questions'].notna()]
-        shares = (
-            filtered['Participates_in_questions']
-            .value_counts()
-            .reindex(PARTICIPATION_ORDER, fill_value=0)
-            / len(filtered)
+def plot_fulltime_participation(
+    df: pd.DataFrame,
+    output_path: Path,
+    employment_status: str,
+) -> pd.Series:
+    """
+    Bar plot of Participates_in_questions frequency for respondents
+    in employment status x. Ignores NaN. Y-axis is share of that subgroup.
+    """
+    employed = df[df['Employment_Status'] == employment_status]
+    filtered = employed[employed['Participates_in_questions'].notna()]
+    shares = (
+        filtered['Participates_in_questions']
+        .value_counts()
+        .reindex(PARTICIPATION_ORDER, fill_value=0)
+        / len(filtered)
+    )
+
+    fig, ax = plt.subplots(figsize=(11, 5.5))
+    ax.bar(range(len(shares)), shares.values, color=PRIMARY_COLOR)
+    ax.set_xticks(range(len(shares)))
+    ax.set_xticklabels(shares.index, rotation=35, ha='right')
+    ax.set_ylim(0.0, 1.0)
+    ax.yaxis.set_major_formatter(PercentFormatter(1.0, decimals=0))
+    ax.set_ylabel(f'Share of {employment_status} respondents', fontsize=13)
+    ax.set_xlabel('Participation frequency in Q&A', fontsize=13)
+    ax.set_title(f'Q&A participation among {employment_status} respondents', fontsize=17, weight='semibold', pad=14)
+    ax.tick_params(axis='both', labelsize=11)
+    ax.grid(axis='y', color=GRID_COLOR, linestyle=':', alpha=0.7)
+    ax.set_axisbelow(True)
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=200, bbox_inches='tight')
+    plt.close(fig)
+    return shares
+
+def plot_age_participation_stacked(
+    df: pd.DataFrame,
+    output_path: Path,
+) -> pd.DataFrame:
+    """
+    Grouped bar chart: for each age group, share of participation frequencies.
+    Each bar is participation / age-group total.
+    """
+    filtered = df[
+        df['Age'].isin(AGE_BINS_ORDER)
+        & df['Participates_in_questions'].isin(PARTICIPATION_ORDER)
+    ].copy()
+    filtered['Age_short'] = filtered['Age'].map(AGE_SHORT_LABELS)
+
+    shares = (
+        pd.crosstab(filtered['Age_short'], filtered['Participates_in_questions'], normalize='index')
+        .reindex(index=AGE_SHORT_ORDER, columns=PARTICIPATION_ORDER, fill_value=0.0)
+    )
+
+    fig, ax = plt.subplots(figsize=(12, 6.5))
+    x = list(range(len(shares.index)))
+    width = 0.8 / len(PARTICIPATION_ORDER)
+
+    for index, participation in enumerate(PARTICIPATION_ORDER):
+        values = shares[participation]
+        ax.bar(
+            [position + (index - (len(PARTICIPATION_ORDER) - 1) / 2) * width for position in x],
+            values,
+            label=participation,
+            color=PARTICIPATION_COLORS[participation],
+            width=width,
         )
 
-        fig, ax = plt.subplots(figsize=(11, 5))
-        ax.bar(range(len(shares)), shares.values)
-        ax.set_xticks(range(len(shares)))
-        ax.set_xticklabels(shares.index, rotation=35, ha='right')
-        ax.set_ylim(0.0, 1.0)
-        ax.set_yticks([i / 10 for i in range(11)])
-        ax.set_ylabel(f'Share of {employment_status} respondents')
-        ax.set_xlabel('Participation frequency in Q&A')
-        ax.set_title(f'Q&A participation among {employment_status}')
-        plt.tight_layout()
-        plt.show()
-        return shares
+    ax.set_xticks(x)
+    ax.set_xticklabels(shares.index)
+    ax.set_ylim(0.0, 1.0)
+    ax.yaxis.set_major_formatter(PercentFormatter(1.0, decimals=0))
+    ax.set_ylabel('Share within age group', fontsize=13)
+    ax.set_xlabel('Age group', fontsize=13)
+    ax.set_title('Q&A participation frequency differs across age groups', fontsize=17, weight='semibold', pad=14)
+    ax.tick_params(axis='both', labelsize=11)
+    ax.grid(axis='y', color=GRID_COLOR, linestyle=':', alpha=0.7)
+    ax.set_axisbelow(True)
+    ax.legend(title='Participation', bbox_to_anchor=(1.02, 1), loc='upper left', fontsize=11, title_fontsize=11)
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=200, bbox_inches='tight')
+    plt.close(fig)
+    return shares
 
-    def plot_age_participation_stacked(self):
-        """
-        Stacked bar chart: for each age group, share of participation frequencies.
-        Each stack segment is participation / age-group total.
-        """
-        filtered = self.df[
-            self.df['Age'].isin(AGE_BINS_ORDER)
-            & self.df['Participates_in_questions'].isin(PARTICIPATION_ORDER)
-        ].copy()
-        filtered['Age_short'] = filtered['Age'].map(AGE_SHORT_LABELS)
+def compare_answer_with_column(
+    df: pd.DataFrame,
+    columnA: str,
+    answerA: str,
+    columnB: str,
+) -> pd.DataFrame:
+    """Return non-null ``columnB`` responses for a selected ``columnA`` answer."""
+    only_answer = df[df[columnA] == answerA]
+    corr_vec = only_answer[only_answer[columnB].notna()]
+    return corr_vec
 
-        shares = (
-            pd.crosstab(filtered['Age_short'], filtered['Participates_in_questions'], normalize='index')
-            .reindex(index=AGE_SHORT_ORDER, columns=PARTICIPATION_ORDER, fill_value=0.0)
+def plot_compare_answer_with_column(
+    df: pd.DataFrame,
+    output_path: Path,
+    columnA: str,
+    answerA: str,
+    columnB: str,
+) -> pd.Series:
+    """
+    Filter by `columnA == answerA`, then plot the percentage distribution
+    of non-null answers in `columnB`.
+    """
+    corr_df = compare_answer_with_column(df, columnA, answerA, columnB)
+    counts = corr_df[columnB].value_counts()
+    shares = counts / len(corr_df)
+
+    fig, ax = plt.subplots(figsize=(11, 5.5))
+    ax.bar(range(len(shares)), shares.values, color=PRIMARY_COLOR)
+    ax.set_xticks(range(len(shares)))
+    ax.set_xticklabels(shares.index, rotation=45, ha='right')
+    ax.set_ylim(0.0, 1.0)
+    ax.yaxis.set_major_formatter(PercentFormatter(1.0, decimals=0))
+    ax.set_ylabel('Share of filtered respondents', fontsize=13)
+    ax.set_xlabel(columnB, fontsize=13)
+    ax.set_title(f'{columnB} responses among respondents with {columnA} = {answerA}', fontsize=17, weight='semibold', pad=14)
+    ax.tick_params(axis='both', labelsize=11)
+    ax.grid(axis='y', color=GRID_COLOR, linestyle=':', alpha=0.7)
+    ax.set_axisbelow(True)
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=200, bbox_inches='tight')
+    plt.close(fig)
+    return shares
+
+def plot_stacked_by_columns(
+    df: pd.DataFrame,
+    output_path: Path,
+    columnA: str,
+    columnB: str,
+    orderA: list | None = None,
+    orderB: list | None = None,
+) -> pd.DataFrame:
+    """
+    Create a grouped bar plot where x-axis is `columnB` and each bar shows
+    the share of a `columnA` response within that `columnB` category.
+    If provided, `orderA` controls stack order and `orderB` controls x-axis order.
+    """
+    filtered = df[
+        df[columnA].notna()
+        & df[columnB].notna()
+    ].copy()
+
+    shares = pd.crosstab(
+        filtered[columnB],
+        filtered[columnA],
+        normalize='index',
+    )
+
+    if orderB is not None:
+        remaining_b = [value for value in shares.index if value not in orderB]
+        shares = shares.reindex(list(orderB) + remaining_b, fill_value=0.0)
+
+    if orderA is not None:
+        remaining_a = [value for value in shares.columns if value not in orderA]
+        shares = shares.reindex(columns=list(orderA) + remaining_a, fill_value=0.0)
+
+    fig, ax = plt.subplots(figsize=(12, 6.5))
+    x = list(range(len(shares.index)))
+    width = 0.8 / len(shares.columns)
+
+    for idx, answer in enumerate(shares.columns):
+        values = shares[answer]
+        ax.bar(
+            [position + (idx - (len(shares.columns) - 1) / 2) * width for position in x],
+            values,
+            label=answer,
+            color=CATEGORICAL_COLORS[idx % len(CATEGORICAL_COLORS)],
+            width=width,
         )
 
-        fig, ax = plt.subplots(figsize=(11, 6))
-        bottom = pd.Series(0.0, index=shares.index)
-        x = range(len(shares.index))
-
-        for participation in PARTICIPATION_ORDER:
-            values = shares[participation]
-            ax.bar(
-                x,
-                values,
-                bottom=bottom,
-                label=participation,
-                color=PARTICIPATION_COLORS[participation],
-            )
-            bottom = bottom + values
-
-        ax.set_xticks(list(x))
-        ax.set_xticklabels(shares.index)
-        ax.set_ylim(0.0, 1.0)
-        ax.set_yticks([i / 10 for i in range(11)])
-        ax.set_ylabel('Share within age group')
-        ax.set_xlabel('Age group')
-        ax.set_title('Q&A participation by age group')
-        ax.legend(title='Participation', bbox_to_anchor=(1.02, 1), loc='upper left')
-        plt.tight_layout()
-        plt.show()
-        return shares
-
-    def compare_answer_with_column(self, columnA: str, answerA: str, columnB: str):
-        """condenses dataset to those who gave a specific answer in columnA, and then 
-        removes all columns except columnB. Its usage is to see correlation between
-        columns"""
-        only_answer = self.df[self.df[columnA] == answerA]
-        corr_vec = only_answer[only_answer[columnB].notna()]
-        return corr_vec
-
-    def plot_compare_answer_with_column(self, columnA: str, answerA: str, columnB: str):
-        """
-        Filter by `columnA == answerA`, then plot the percentage distribution
-        of non-null answers in `columnB`.
-        """
-        corr_df = self.compare_answer_with_column(columnA, answerA, columnB)
-        counts = corr_df[columnB].value_counts()
-        shares = counts / len(corr_df)
-
-        fig, ax = plt.subplots(figsize=(11, 5))
-        ax.bar(range(len(shares)), shares.values)
-        ax.set_xticks(range(len(shares)))
-        ax.set_xticklabels(shares.index, rotation=45, ha='right')
-        ax.set_ylim(0.0, 1.0)
-        ax.set_yticks([i / 10 for i in range(11)])
-        ax.set_ylabel('Percentage of filtered rows')
-        ax.set_xlabel(columnB)
-        ax.set_title(f'{columnB} distribution for {columnA} = {answerA}')
-        plt.tight_layout()
-        plt.show()
-        return shares
-
-    def plot_stacked_by_columns(self, columnA: str, columnB: str, orderA=None, orderB=None):
-        """
-        Create a stacked bar plot where x-axis is `columnB`, each bar sums to 1,
-        and the stacks are the different answers in `columnA`.
-        If provided, `orderA` controls stack order and `orderB` controls x-axis order.
-        """
-        filtered = self.df[
-            self.df[columnA].notna()
-            & self.df[columnB].notna()
-        ].copy()
-
-        shares = pd.crosstab(
-            filtered[columnB],
-            filtered[columnA],
-            normalize='index',
-        )
-
-        if orderB is not None:
-            remaining_b = [value for value in shares.index if value not in orderB]
-            shares = shares.reindex(list(orderB) + remaining_b, fill_value=0.0)
-
-        if orderA is not None:
-            remaining_a = [value for value in shares.columns if value not in orderA]
-            shares = shares.reindex(columns=list(orderA) + remaining_a, fill_value=0.0)
-
-        fig, ax = plt.subplots(figsize=(12, 6))
-        bottom = pd.Series(0.0, index=shares.index)
-        x = range(len(shares.index))
-        cmap = plt.get_cmap('tab20')
-
-        for idx, answer in enumerate(shares.columns):
-            values = shares[answer]
-            ax.bar(
-                x,
-                values,
-                bottom=bottom,
-                label=answer,
-                color=cmap(idx % cmap.N),
-            )
-            bottom = bottom + values
-
-        ax.set_xticks(list(x))
-        ax.set_xticklabels(shares.index, rotation=45, ha='right')
-        ax.set_ylim(0.0, 1.0)
-        ax.set_yticks([i / 10 for i in range(11)])
-        ax.set_ylabel('Percentage')
-        ax.set_xlabel(columnB)
-        ax.set_title(f'{columnA} distribution within {columnB}')
-        ax.legend(title=columnA, bbox_to_anchor=(1.02, 1), loc='upper left')
-        plt.tight_layout()
-        plt.show()
-        return shares
+    ax.set_xticks(x)
+    ax.set_xticklabels(shares.index, rotation=45, ha='right')
+    ax.set_ylim(0.0, 1.0)
+    ax.yaxis.set_major_formatter(PercentFormatter(1.0, decimals=0))
+    ax.set_ylabel(f'Share of {columnB} respondents', fontsize=13)
+    ax.set_xlabel(columnB, fontsize=13)
+    ax.set_title(f'{columnA} response shares within each {columnB} category', fontsize=17, weight='semibold', pad=14)
+    ax.tick_params(axis='both', labelsize=11)
+    ax.grid(axis='y', color=GRID_COLOR, linestyle=':', alpha=0.7)
+    ax.set_axisbelow(True)
+    ax.legend(title=columnA, bbox_to_anchor=(1.02, 1), loc='upper left', fontsize=11, title_fontsize=11)
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=200, bbox_inches='tight')
+    plt.close(fig)
+    return shares
