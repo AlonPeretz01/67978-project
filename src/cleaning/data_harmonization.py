@@ -28,6 +28,10 @@ TARGET_COLUMNS = [
     'Visits_SO_freq'
 ]
 
+# These survey instruments do not provide the same professional-experience
+# measure used elsewhere.  Preserve that provenance in the master dataset.
+EXPERIENCE_PROXY_YEARS = {'2015', '2016', '2025'}
+
 # Harmonization Dictionary (Schema mapping for all years)
 schema_mapping = {
     '2011': {
@@ -143,7 +147,9 @@ schema_mapping = {
         'Age': 'Age',
         'Employment': 'Employment_Status',
         'EdLevel': 'Education_Level',
-        'YearsCodePro': 'Years_of_Experience',
+        # 2025 does not publish YearsCodePro; YearsCode is total coding
+        # experience and is retained only as an explicitly tagged proxy.
+        'YearsCode': 'Years_of_Experience',
         'ConvertedCompYearly': 'Yearly_Compensation',
         'AISelect': 'AI_Usage_Status',
     }
@@ -180,7 +186,12 @@ def harmonize_schema(df, year):
                 ', '.join(source_columns),
             )
 
-    return harmonized.reindex(columns=TARGET_COLUMNS)
+    experience_is_proxy = (
+        year in EXPERIENCE_PROXY_YEARS
+        and harmonized['Years_of_Experience'].notna()
+    )
+    harmonized['experience_is_proxy'] = experience_is_proxy
+    return harmonized.reindex(columns=[*TARGET_COLUMNS, 'experience_is_proxy'])
 
 def run_harmonization_pipeline():
     if not os.path.exists(PROCESSED_DIR):

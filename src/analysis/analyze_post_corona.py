@@ -48,6 +48,7 @@ PARTICIPATION_ORDER = [
     'Few times per month',
     'Weekly',
     'Daily',
+    'No answer',
 ]
 
 AGE_SHORT_LABELS = {
@@ -68,6 +69,7 @@ PARTICIPATION_COLORS = {
     'Few times per month': TERTIARY_COLOR,
     'Weekly': QUATERNARY_COLOR,
     'Daily': QUINARY_COLOR,
+    'No answer': '#999999',
 }
 
 CATEGORICAL_COLORS = (
@@ -210,8 +212,8 @@ class Post_Corona:
             "Daily or almost daily": "Daily",
             "Multiple times per day": "Daily",
         }
-        df[col_name] = df[col_name].astype(str).str.strip()
-        df[col_name] = df[col_name].replace(participation_map)
+        df[col_name] = df[col_name].astype('string').str.strip()
+        df[col_name] = df[col_name].replace(participation_map).fillna('No answer')
         self.df = df
         return self.df
 
@@ -382,7 +384,6 @@ def prepare_post_corona_data(dataframe: pd.DataFrame) -> pd.DataFrame:
 
     analysis = Post_Corona(subset)
     analysis.age_union()
-    analysis.drop_all_nan_rows()
     analysis.unite_employement()
     analysis.change_education_level_names()
     analysis.change_participation_names()
@@ -396,8 +397,8 @@ def plot_fulltime_participation(
     employment_status: str,
 ) -> pd.Series:
     """
-    Bar plot of Participates_in_questions frequency for respondents
-    in employment status x. Ignores NaN. Y-axis is share of that subgroup.
+    Bar plot of participation frequency for respondents in an employment group,
+    including missing answers as the explicit ``No answer`` category.
     """
     employed = df[df['Employment_Status'] == employment_status]
     filtered = employed[employed['Participates_in_questions'].notna()]
@@ -559,7 +560,7 @@ def plot_stacked_by_columns(
             [position + (idx - (len(shares.columns) - 1) / 2) * width for position in x],
             values,
             label=answer,
-            color=CATEGORICAL_COLORS[idx % len(CATEGORICAL_COLORS)],
+            color=PARTICIPATION_COLORS.get(answer, CATEGORICAL_COLORS[idx % len(CATEGORICAL_COLORS)]),
             width=width,
         )
 

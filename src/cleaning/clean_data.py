@@ -39,7 +39,7 @@ def clean_dataframe(
     *,
     missing_column_threshold: float | None = None,
 ) -> pd.DataFrame:
-    """Return a de-duplicated copy with unnamed and optional sparse columns removed.
+    """Return a copy with unnamed and optional sparse columns removed.
 
     Args:
         dataframe: Input dataset to clean.
@@ -56,7 +56,6 @@ def clean_dataframe(
         column for column in cleaned.columns if "unnamed" in str(column).lower()
     ]
     cleaned = cleaned.drop(columns=unnamed_columns)
-    cleaned = cleaned.drop_duplicates().reset_index(drop=True)
 
     if missing_column_threshold is not None:
         missing_percentages = cleaned.isna().mean().mul(100)

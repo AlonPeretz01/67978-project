@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -19,18 +20,24 @@ from src.analysis.analyze_post_corona import (
     prepare_post_corona_data,
 )
 from src.analysis.audit_dataset import audit_dataset
-from src.analysis.structural_break import (
-    analyze_theoretical_slope_changes,
-    format_sensitivity_table,
-)
 from src.cleaning.clean_data import clean_dataframe
+from src.cleaning.data_harmonization import run_harmonization_pipeline
 from src.models.community_demographics_ml import (
     build_demographic_summary,
-    fit_engagement_model,
     plot_demographic_shift,
-    plot_feature_importance,
 )
-from src.visualization.plot_nulls import plot_null_percentages
+from src.visualization.plot_nulls import (
+    plot_null_distribution_by_year,
+    plot_null_percentages,
+)
+from scripts.audit.generate_audit import write_audit
+from scripts.audit.generate_followup import (
+    write_reconciliation,
+    write_rf_eval,
+    write_robustness,
+)
+from scripts.audit.generate_proxy_bias import write_proxy_bias
+from scripts.audit.regenerate_and_sweep import write_figure_sweep
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -38,35 +45,64 @@ PROCESSED_DATASET = (
     PROJECT_ROOT / "data" / "processed" / "harmonized_stack_overflow_2011_2025.csv"
 )
 FIGURES_DIRECTORY = PROJECT_ROOT / "outputs" / "figures"
+AUDIT_DIRECTORY = PROJECT_ROOT / "outputs" / "audit"
 
 
 def load_processed_dataset(dataset_path: Path = PROCESSED_DATASET) -> pd.DataFrame:
-    """Load the single harmonized dataset used by the project pipeline."""
+    """Load the harmonized dataset, building it from raw files when needed."""
+    if not dataset_path.is_file():
+        print("Processed dataset missing; building it from data/raw.", flush=True)
+        run_harmonization_pipeline()
     if not dataset_path.is_file():
         raise FileNotFoundError(f"Processed dataset not found: {dataset_path}")
     return pd.read_csv(dataset_path, low_memory=False)
 
 
 def run_pipeline(dataset_path: Path = PROCESSED_DATASET) -> dict[str, Any]:
-    """Run cleaning, audit, analysis, modelling, and figure generation once."""
+    """Regenerate every report-referenced figure and audit artefact once."""
+    run_started = datetime.now()
+    stage = 0
+
+    def report_stage(name: str) -> None:
+        nonlocal stage
+        stage += 1
+        print(f"STAGE {stage:02d}/11: {name}", flush=True)
+
+    report_stage("load master dataset")
     raw_dataframe = load_processed_dataset(dataset_path)
+    report_stage("clean and audit master data")
     cleaned_dataframe = clean_dataframe(raw_dataframe)
     audit_report = audit_dataset(cleaned_dataframe)
 
+    report_stage("prepare analysis summaries")
     null_summary = summarize_null_percentages(cleaned_dataframe)
     post_corona_dataframe = prepare_post_corona_data(cleaned_dataframe)
-    demographic_summary = build_demographic_summary(cleaned_dataframe)
-    model_importances = fit_engagement_model(cleaned_dataframe)
+    # The cohort figure is an audit of the harmonized master itself.  Do not
+    # deduplicate it here: repeated survey responses are analytical rows, and
+    # dropping them made its values disagree with AUDIT.md.
+    demographic_summary = build_demographic_summary(raw_dataframe)
 
     FIGURES_DIRECTORY.mkdir(parents=True, exist_ok=True)
+    AUDIT_DIRECTORY.mkdir(parents=True, exist_ok=True)
+    report_stage("write master audit")
+    write_audit(raw_dataframe)
+    report_stage("verify cohort audit values")
+    audit_text = (AUDIT_DIRECTORY / "AUDIT.md").read_text(encoding="utf-8")
+    for year, junior, senior in ((2017, 0.369076, 0.358792), (2018, 0.392047, 0.327715)):
+        observed = demographic_summary.loc[year]
+        if not (abs(observed["early_career_share"] - junior) < 5e-7 and abs(observed["senior_share"] - senior) < 5e-7):
+            raise RuntimeError(f"Current master cohort summary disagrees for {year}.")
+        if not any(f"| {year} |" in line and f"{junior:.6f}" in line and f"{senior:.6f}" in line for line in audit_text.splitlines()):
+            raise RuntimeError(f"AUDIT.md does not contain the verified {year} cohort row.")
+    report_stage("generate pipeline figures")
     plot_null_percentages(null_summary, FIGURES_DIRECTORY / "null_distribution_plot.png")
+    plot_null_distribution_by_year(
+        cleaned_dataframe,
+        FIGURES_DIRECTORY / "null_distribution_boxplot.png",
+    )
     plot_demographic_shift(
         demographic_summary,
         FIGURES_DIRECTORY / "demographic_shift_2011_2025.png",
-    )
-    plot_feature_importance(
-        model_importances,
-        FIGURES_DIRECTORY / "feature_importance_so_engagement.png",
     )
     plot_fulltime_participation(
         post_corona_dataframe,
@@ -93,26 +129,24 @@ def run_pipeline(dataset_path: Path = PROCESSED_DATASET) -> dict[str, Any]:
         orderB=AGE_BINS_ORDER,
     )
 
-    structural_break_input = (
-        demographic_summary.reset_index()
-        .rename(columns={"Year": "Survey_Year", "early_career_share": "Junior_Proportion"})
-        .loc[:, ["Survey_Year", "Junior_Proportion"]]
-        .dropna()
-    )
-    structural_break_results, break_figures = analyze_theoretical_slope_changes(
-        structural_break_input,
-        metric_columns=["Junior_Proportion"],
-        output_directory=FIGURES_DIRECTORY,
-    )
+    report_stage("write cohort reconciliation")
+    write_reconciliation(raw_dataframe)
+    report_stage("evaluate reference random forest")
+    write_rf_eval(raw_dataframe)
+    report_stage("write robustness analysis")
+    write_robustness(raw_dataframe)
+    report_stage("write proxy-bias audit")
+    write_proxy_bias(raw_dataframe)
+    report_stage("verify figure freshness")
+    write_figure_sweep(run_started)
 
     return {
         "audit": audit_report,
+        "master_rows": len(raw_dataframe),
         "null_summary": null_summary,
         "post_corona_data": post_corona_dataframe,
         "demographic_summary": demographic_summary,
-        "model_importances": model_importances,
-        "structural_break_results": structural_break_results,
-        "structural_break_figures": break_figures,
+        "audit_directory": AUDIT_DIRECTORY,
     }
 
 
@@ -127,16 +161,12 @@ def main() -> int:
 
     audit_report = results["audit"]
     logging.info(
-        "Completed pipeline for %s rows and %s columns.",
-        audit_report["rows"],
+        "Completed pipeline. Master: %s rows; analysis frame: %s rows; %s columns.",
+        f'{results["master_rows"]:,}',
+        f'{audit_report["rows"]:,}',
         audit_report["columns"],
     )
-    sensitivity_table = format_sensitivity_table(results["structural_break_results"])
-    logging.info(
-        "Piecewise-regression sensitivity analysis:\n%s",
-        sensitivity_table.to_string(index=False),
-    )
-    logging.info("Saved figures to %s", FIGURES_DIRECTORY.relative_to(PROJECT_ROOT))
+    logging.info("Saved figures to %s and audits to %s", FIGURES_DIRECTORY.relative_to(PROJECT_ROOT), AUDIT_DIRECTORY.relative_to(PROJECT_ROOT))
     return 0
 
 

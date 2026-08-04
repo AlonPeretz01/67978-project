@@ -1,11 +1,8 @@
 # --- Data files (never commit large survey data) ---
-data/raw/
 data/
-*.csv
-*.tsv
-*.xlsx
-*.zip
-*.parquet
+
+# --- Internal planning docs (not for submission) ---
+outputs/audit/CLEANUP_PLAN.md
 
 # --- Python ---
 __pycache__/
