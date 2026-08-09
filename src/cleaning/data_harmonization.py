@@ -3,7 +3,8 @@ import logging
 
 import pandas as pd
 
-from src.cleaning.clean_data import YEARS, clean_survey_data
+# from src.cleaning.clean_data import YEARS, clean_survey_data
+from clean_data import YEARS, clean_survey_data
 
 # Define paths
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -235,3 +236,6 @@ def run_harmonization_pipeline():
     else:
         print("No raw survey CSV files were found to harmonize.")
 
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    run_harmonization_pipeline()
