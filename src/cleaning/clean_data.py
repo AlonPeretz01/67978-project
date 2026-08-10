@@ -89,10 +89,19 @@ def clean_survey_data():
                 year,
                 MULTIROW_HEADER_YEARS[year] + 1,
             )
+        # try:
+        #     df = pd.read_csv(file_path, **read_options)
+        # except UnicodeDecodeError:
+        #     df = pd.read_csv(file_path, encoding="latin1", **read_options)
+        # file_extension = os.path.splitext(file_path)[1].lower()
+        # if file_extension in {'.xls', '.xlsx', '.xlsm', '.xlsb', '.ods'}:
+        #     df = pd.read_excel(file_path)
+        # else:
+        print(f"Reading file: {file_path}")
         try:
-            df = pd.read_csv(file_path, **read_options)
+            df = pd.read_csv(file_path, low_memory=False)
         except UnicodeDecodeError:
-            df = pd.read_csv(file_path, encoding="latin1", **read_options)
+            df = pd.read_csv(file_path, low_memory=False, encoding='latin1')
 
         original_columns = df.columns
         df = clean_dataframe(df, missing_column_threshold=THRESHOLD)

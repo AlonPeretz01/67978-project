@@ -3,8 +3,8 @@ import logging
 
 import pandas as pd
 
-# from src.cleaning.clean_data import YEARS, clean_survey_data
-from clean_data import YEARS, clean_survey_data
+from src.cleaning.clean_data import YEARS, clean_survey_data
+# from clean_data import YEARS, clean_survey_data
 
 # Define paths
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -212,10 +212,15 @@ def run_harmonization_pipeline():
             continue
 
         print(f"Harmonizing {year}...")
-        try:
-            df = pd.read_csv(file_path, low_memory=False)
-        except UnicodeDecodeError:
-            df = pd.read_csv(file_path, low_memory=False, encoding='latin1')
+        print(f"Reading file: {file_path}")
+        file_extension = os.path.splitext(file_path)[1].lower()
+        if file_extension in {'.xls', '.xlsx', '.xlsm', '.xlsb', '.ods'}:
+            df = pd.read_excel(file_path)
+        else:
+            try:
+                df = pd.read_csv(file_path, low_memory=False)
+            except UnicodeDecodeError:
+                df = pd.read_csv(file_path, low_memory=False, encoding='latin1')
 
         harmonized_df = harmonize_schema(df, str(year))
         harmonized_dfs.append(harmonized_df)
