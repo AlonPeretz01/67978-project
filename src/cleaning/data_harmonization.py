@@ -97,6 +97,7 @@ schema_mapping = {
         'ConvertedComp': 'Yearly_Compensation',
         'SOPartFreq': 'Participates_in_questions',
         'SOComm': 'Part_of_community',
+        'SOVisitFreq': 'Visits_SO_freq'
     },
     '2020': {
         'Age': 'Age',
@@ -141,6 +142,7 @@ schema_mapping = {
         'AIToolCurrently Using': 'AI_Tool_Usage',
         'SOPartFreq': 'Participates_in_questions',
         'SOComm': 'Part_of_community',
+        'SOVisitFreq': 'Visits_SO_freq'
     },
     '2024': {
         'Age': 'Age',
@@ -152,6 +154,7 @@ schema_mapping = {
         'AIToolCurrently Using': 'AI_Tool_Usage',
         'SOPartFreq': 'Participates_in_questions',
         'SOComm': 'Part_of_community',
+        'SOVisitFreq': 'Visits_SO_freq'
     },
     '2025': {
         'Age': 'Age',
@@ -164,6 +167,7 @@ schema_mapping = {
         'AISelect': 'AI_Usage_Status',
         'SOPartFreq': 'Participates_in_questions',
         'SOComm': 'Part_of_community',
+        'SOVisitFreq': 'Visits_SO_freq'
     }
 }
 

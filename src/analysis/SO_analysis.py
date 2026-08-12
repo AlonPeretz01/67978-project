@@ -109,11 +109,11 @@ def visit_over_time(df: pd.DataFrame, output_path: str | Path) -> pd.DataFrame:
         marker="o",
         linewidth=2,
         color=TERTIARY_COLOR,
-        label="Visits at least a few times per month",
+        label="Participates at least a few times per month",
     )
     _base_axes(
         ax,
-        "Frequent Stack Overflow visiting declined over time, 2018-2025",
+        "Frequent Stack Overflow participation declined over time, 2018-2025",
         "Share of respondents",
     )
     ax.set_xticks(VISIT_YEAR_RANGE)
