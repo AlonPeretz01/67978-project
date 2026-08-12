@@ -142,16 +142,16 @@ def run_pipeline(dataset_path: Path = PROCESSED_DATASET) -> dict[str, Any]:
         FIGURES_DIRECTORY / "visits_so_freq_2017_2025.png",
     )
 
-    report_stage("write cohort reconciliation")
-    write_reconciliation(raw_dataframe)
-    report_stage("evaluate reference random forest")
-    write_rf_eval(raw_dataframe)
-    report_stage("write robustness analysis")
-    write_robustness(raw_dataframe)
-    report_stage("write proxy-bias audit")
-    write_proxy_bias(raw_dataframe)
-    report_stage("verify figure freshness")
-    write_figure_sweep(run_started)
+    # report_stage("write cohort reconciliation")
+    # write_reconciliation(raw_dataframe)
+    # report_stage("evaluate reference random forest")
+    # write_rf_eval(raw_dataframe)
+    # report_stage("write robustness analysis")
+    # write_robustness(raw_dataframe)
+    # report_stage("write proxy-bias audit")
+    # write_proxy_bias(raw_dataframe)
+    # report_stage("verify figure freshness")
+    # write_figure_sweep(run_started)
 
     return {
         "audit": audit_report,

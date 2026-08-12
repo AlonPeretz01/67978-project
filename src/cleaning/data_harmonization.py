@@ -202,6 +202,8 @@ def harmonize_schema(df, year):
         year in EXPERIENCE_PROXY_YEARS
         and harmonized['Years_of_Experience'].notna()
     )
+    print(year)
+    print(harmonized['Participates_in_questions'].value_counts(dropna=False))
     harmonized['experience_is_proxy'] = experience_is_proxy
     return harmonized.reindex(columns=[*TARGET_COLUMNS, 'experience_is_proxy'])
 
@@ -238,8 +240,10 @@ def run_harmonization_pipeline():
 
         print(f"  -> Extracted {harmonized_df.shape[1]} core columns.")
 
+      # Display the first 3 rows of the last harmonized DataFrame for verification
     # Concatenate all DataFrames into a single central dataset
     if harmonized_dfs:
+        year_2019 = harmonized_dfs[YEARS.index(2019)]
         print("\nConcatenating all years into a single dataset...")
         final_dataset = pd.concat(harmonized_dfs, ignore_index=True)
         
@@ -255,3 +259,4 @@ def run_harmonization_pipeline():
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     run_harmonization_pipeline()
+    

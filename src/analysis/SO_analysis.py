@@ -50,8 +50,8 @@ def is_part_of_community(df: pd.DataFrame, output_path: str | Path) -> pd.DataFr
 
     metrics = (
         subset.assign(
-            yes=answers.str.contains("yes|agree", case=False, na=False, regex=True),
-            no=answers.str.contains("no|disagree", case=False, na=False, regex=True),
+            yes=answers.str.contains("yes|agree|Yes|Agree", case=False, na=False, regex=True),
+            no=answers.str.contains("no|disagree|No|Disagree", case=False, na=False, regex=True),
             valid_answer=answers.notna(),
         )
         .groupby("Year", as_index=True)
@@ -87,7 +87,7 @@ def visit_over_time(df: pd.DataFrame, output_path: str | Path) -> pd.DataFrame:
     subset = df.copy()
     subset["Year"] = pd.to_numeric(subset["Year"], errors="coerce")
     subset = subset[subset["Year"].isin(VISIT_YEAR_RANGE)].copy()
-    visit_answers = subset["Visits_SO_freq"].astype("string")
+    visit_answers = subset["Participates_in_questions"].astype("string")
 
     metrics = (
         subset.assign(
