@@ -77,6 +77,7 @@ schema_mapping = {
         'YearsCodedJob': 'Years_of_Experience',
         'Salary': 'Yearly_Compensation',
         'StackOverflowVisit': 'Usage_Frequency',
+        'StackOverflowCommunity': 'Part_of_community',
     },
     '2018': {
         'Age': 'Age',
@@ -85,6 +86,8 @@ schema_mapping = {
         'YearsCodingProf': 'Years_of_Experience',
         'ConvertedSalary': 'Yearly_Compensation',
         'StackOverflowVisit': 'Usage_Frequency',
+        'StackOverflowParticipation': 'Participates_in_questions',
+        'StackOverflowConsiderMember': 'Part_of_community',
     },
     '2019': {
         'Age': 'Age',
@@ -92,6 +95,8 @@ schema_mapping = {
         'EdLevel': 'Education_Level',
         'YearsCodePro': 'Years_of_Experience',
         'ConvertedComp': 'Yearly_Compensation',
+        'SOPartFreq': 'Participates_in_questions',
+        'SOComm': 'Part_of_community',
     },
     '2020': {
         'Age': 'Age',
@@ -134,6 +139,8 @@ schema_mapping = {
         'ConvertedCompYearly': 'Yearly_Compensation',
         'AISelect': 'AI_Usage_Status',
         'AIToolCurrently Using': 'AI_Tool_Usage',
+        'SOPartFreq': 'Participates_in_questions',
+        'SOComm': 'Part_of_community',
     },
     '2024': {
         'Age': 'Age',
@@ -143,6 +150,8 @@ schema_mapping = {
         'ConvertedCompYearly': 'Yearly_Compensation',
         'AISelect': 'AI_Usage_Status',
         'AIToolCurrently Using': 'AI_Tool_Usage',
+        'SOPartFreq': 'Participates_in_questions',
+        'SOComm': 'Part_of_community',
     },
     '2025': {
         'Age': 'Age',
@@ -153,6 +162,8 @@ schema_mapping = {
         'YearsCode': 'Years_of_Experience',
         'ConvertedCompYearly': 'Yearly_Compensation',
         'AISelect': 'AI_Usage_Status',
+        'SOPartFreq': 'Participates_in_questions',
+        'SOComm': 'Part_of_community',
     }
 }
 
