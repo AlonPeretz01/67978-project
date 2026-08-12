@@ -207,7 +207,7 @@ def harmonize_schema(df, year):
         and harmonized['Years_of_Experience'].notna()
     )
     print(year)
-    print(harmonized['Participates_in_questions'].value_counts(dropna=False))
+    print(harmonized['Part_of_community'].value_counts(dropna=False))
     harmonized['experience_is_proxy'] = experience_is_proxy
     return harmonized.reindex(columns=[*TARGET_COLUMNS, 'experience_is_proxy'])
 

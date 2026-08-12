@@ -22,6 +22,7 @@ from src.analysis.analyze_post_corona import (
 from src.analysis.SO_analysis import (
     is_part_of_community,
     visit_over_time,
+    count_null_percentages,
 )
 from src.analysis.audit_dataset import audit_dataset
 from src.cleaning.clean_data import clean_dataframe
@@ -79,60 +80,59 @@ def run_pipeline(dataset_path: Path = PROCESSED_DATASET) -> dict[str, Any]:
     audit_report = audit_dataset(cleaned_dataframe)
 
     report_stage("prepare analysis summaries")
-    # null_summary = summarize_null_percentages(cleaned_dataframe)
+    null_summary = summarize_null_percentages(cleaned_dataframe)
     post_corona_dataframe = prepare_post_corona_data(cleaned_dataframe)
     # The cohort figure is an audit of the harmonized master itself.  Do not
     # deduplicate it here: repeated survey responses are analytical rows, and
     # dropping them made its values disagree with AUDIT.md.
-    # print(raw_dataframe.shape)
-    # demographic_summary = build_demographic_summary(raw_dataframe)
+    demographic_summary = build_demographic_summary(raw_dataframe)
 
-    # FIGURES_DIRECTORY.mkdir(parents=True, exist_ok=True)
-    # AUDIT_DIRECTORY.mkdir(parents=True, exist_ok=True)
-    # report_stage("write master audit")
-    # write_audit(raw_dataframe)
-    # report_stage("verify cohort audit values")
-    # audit_text = (AUDIT_DIRECTORY / "AUDIT.md").read_text(encoding="utf-8")
-    # for year, junior, senior in ((2017, 0.369076, 0.358792), (2018, 0.392047, 0.327715)):
-    #     observed = demographic_summary.loc[year]
-    #     if not (abs(observed["early_career_share"] - junior) < 5e-7 and abs(observed["senior_share"] - senior) < 5e-7):
-    #         raise RuntimeError(f"Current master cohort summary disagrees for {year}.")
-    #     if not any(f"| {year} |" in line and f"{junior:.6f}" in line and f"{senior:.6f}" in line for line in audit_text.splitlines()):
-    #         raise RuntimeError(f"AUDIT.md does not contain the verified {year} cohort row.")
+    FIGURES_DIRECTORY.mkdir(parents=True, exist_ok=True)
+    AUDIT_DIRECTORY.mkdir(parents=True, exist_ok=True)
+    report_stage("write master audit")
+    write_audit(raw_dataframe)
+    report_stage("verify cohort audit values")
+    audit_text = (AUDIT_DIRECTORY / "AUDIT.md").read_text(encoding="utf-8")
+    for year, junior, senior in ((2017, 0.369076, 0.358792), (2018, 0.392047, 0.327715)):
+        observed = demographic_summary.loc[year]
+        if not (abs(observed["early_career_share"] - junior) < 5e-7 and abs(observed["senior_share"] - senior) < 5e-7):
+            raise RuntimeError(f"Current master cohort summary disagrees for {year}.")
+        if not any(f"| {year} |" in line and f"{junior:.6f}" in line and f"{senior:.6f}" in line for line in audit_text.splitlines()):
+            raise RuntimeError(f"AUDIT.md does not contain the verified {year} cohort row.")
     report_stage("generate pipeline figures")
-    # plot_null_percentages(null_summary, FIGURES_DIRECTORY / "null_distribution_plot.png")
-    # plot_null_distribution_by_year(
-    #     cleaned_dataframe,
-    #     FIGURES_DIRECTORY / "null_distribution_boxplot.png",
-    # )
-    # plot_demographic_shift(
-    #     demographic_summary,
-    #     FIGURES_DIRECTORY / "demographic_shift_2011_2025.png",
-    # )
-    # plot_fulltime_participation(
-    #     post_corona_dataframe,
-    #     FIGURES_DIRECTORY / "post_corona_fulltime_participation.png",
-    #     employment_status="Employed full-time",
-    # )
-    # plot_age_participation_stacked(
-    #     post_corona_dataframe,
-    #     FIGURES_DIRECTORY / "post_corona_age_participation.png",
-    # )
-    # plot_compare_answer_with_column(
-    #     post_corona_dataframe,
-    #     FIGURES_DIRECTORY / "post_corona_fulltime_participation_distribution.png",
-    #     columnA="Employment_Status",
-    #     answerA="Employed full-time",
-    #     columnB="Participates_in_questions",
-    # )
-    # plot_stacked_by_columns(
-    #     post_corona_dataframe,
-    #     FIGURES_DIRECTORY / "post_corona_participation_by_age.png",
-    #     columnA="Participates_in_questions",
-    #     columnB="Age",
-    #     orderA=PARTICIPATION_ORDER,
-    #     orderB=AGE_BINS_ORDER,
-    # )
+    plot_null_percentages(null_summary, FIGURES_DIRECTORY / "null_distribution_plot.png")
+    plot_null_distribution_by_year(
+        cleaned_dataframe,
+        FIGURES_DIRECTORY / "null_distribution_boxplot.png",
+    )
+    plot_demographic_shift(
+        demographic_summary,
+        FIGURES_DIRECTORY / "demographic_shift_2011_2025.png",
+    )
+    plot_fulltime_participation(
+        post_corona_dataframe,
+        FIGURES_DIRECTORY / "post_corona_fulltime_participation.png",
+        employment_status="Employed full-time",
+    )
+    plot_age_participation_stacked(
+        post_corona_dataframe,
+        FIGURES_DIRECTORY / "post_corona_age_participation.png",
+    )
+    plot_compare_answer_with_column(
+        post_corona_dataframe,
+        FIGURES_DIRECTORY / "post_corona_fulltime_participation_distribution.png",
+        columnA="Employment_Status",
+        answerA="Employed full-time",
+        columnB="Participates_in_questions",
+    )
+    plot_stacked_by_columns(
+        post_corona_dataframe,
+        FIGURES_DIRECTORY / "post_corona_participation_by_age.png",
+        columnA="Participates_in_questions",
+        columnB="Age",
+        orderA=PARTICIPATION_ORDER,
+        orderB=AGE_BINS_ORDER,
+    )
     is_part_of_community(
         cleaned_dataframe,
         FIGURES_DIRECTORY / "part_of_community_2017_2025.png",
@@ -141,24 +141,28 @@ def run_pipeline(dataset_path: Path = PROCESSED_DATASET) -> dict[str, Any]:
         cleaned_dataframe,
         FIGURES_DIRECTORY / "visits_so_freq_2017_2025.png",
     )
+    count_null_percentages(
+        cleaned_dataframe,
+        "Part_of_community",
+    )
 
-    # report_stage("write cohort reconciliation")
-    # write_reconciliation(raw_dataframe)
-    # report_stage("evaluate reference random forest")
-    # write_rf_eval(raw_dataframe)
-    # report_stage("write robustness analysis")
-    # write_robustness(raw_dataframe)
-    # report_stage("write proxy-bias audit")
-    # write_proxy_bias(raw_dataframe)
-    # report_stage("verify figure freshness")
-    # write_figure_sweep(run_started)
+    report_stage("write cohort reconciliation")
+    write_reconciliation(raw_dataframe)
+    report_stage("evaluate reference random forest")
+    write_rf_eval(raw_dataframe)
+    report_stage("write robustness analysis")
+    write_robustness(raw_dataframe)
+    report_stage("write proxy-bias audit")
+    write_proxy_bias(raw_dataframe)
+    report_stage("verify figure freshness")
+    write_figure_sweep(run_started)
 
     return {
         "audit": audit_report,
         "master_rows": len(raw_dataframe),
-        # "null_summary": null_summary,
+        "null_summary": null_summary,
         "post_corona_data": post_corona_dataframe,
-        # "demographic_summary": demographic_summary,
+        "demographic_summary": demographic_summary,
         "audit_directory": AUDIT_DIRECTORY,
     }
 

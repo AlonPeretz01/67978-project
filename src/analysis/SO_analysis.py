@@ -47,18 +47,19 @@ def is_part_of_community(df: pd.DataFrame, output_path: str | Path) -> pd.DataFr
     subset["Year"] = pd.to_numeric(subset["Year"], errors="coerce")
     subset = subset[subset["Year"].isin(YEAR_RANGE)].copy()
     answers = subset["Part_of_community"].astype("string").str.strip()
+    subset = subset.loc[answers.notna() & answers.ne("")].copy()
+    answers = subset["Part_of_community"].astype("string").str.strip()
 
     metrics = (
         subset.assign(
-            yes=answers.str.contains("yes|agree|Yes|Agree", case=False, na=False, regex=True),
-            no=answers.str.contains("no|disagree|No|Disagree", case=False, na=False, regex=True),
-            valid_answer=answers.notna(),
+            yes=answers.str.contains(r"yes|(?<!dis)agree", case=False, na=False, regex=True),
+            no=answers.str.contains(r"no|disagree", case=False, na=False, regex=True),
         )
         .groupby("Year", as_index=True)
         .agg(
             yes_share=("yes", "mean"),
             no_share=("no", "mean"),
-            n_responses=("valid_answer", "sum"),
+            n_responses=("Year", "size"),
         )
         .reindex(YEAR_RANGE)
     )
@@ -87,17 +88,18 @@ def visit_over_time(df: pd.DataFrame, output_path: str | Path) -> pd.DataFrame:
     subset = df.copy()
     subset["Year"] = pd.to_numeric(subset["Year"], errors="coerce")
     subset = subset[subset["Year"].isin(VISIT_YEAR_RANGE)].copy()
-    visit_answers = subset["Participates_in_questions"].astype("string")
+    visit_answers = subset["Participates_in_questions"].astype("string").str.strip()
+    subset = subset.loc[visit_answers.notna() & visit_answers.ne("")].copy()
+    visit_answers = subset["Participates_in_questions"].astype("string").str.strip()
 
     metrics = (
         subset.assign(
             frequent_visit=visit_answers.isin(VISIT_INCLUDED),
-            valid_answer=visit_answers.notna(),
         )
         .groupby("Year", as_index=True)
         .agg(
             frequent_visit_share=("frequent_visit", "mean"),
-            n_responses=("valid_answer", "sum"),
+            n_responses=("Year", "size"),
         )
         .reindex(VISIT_YEAR_RANGE)
     )
@@ -122,3 +124,28 @@ def visit_over_time(df: pd.DataFrame, output_path: str | Path) -> pd.DataFrame:
     fig.savefig(Path(output_path), dpi=200, bbox_inches="tight")
     plt.close(fig)
     return metrics.reset_index(names="Year")
+
+def count_null_percentages(df: pd.DataFrame, column: str) -> pd.Series:
+    """
+    Count the percentage of null values for a specific column in the given
+    DataFrame by survey year, then print each year's percentage.
+    """
+    if column not in df.columns:
+        raise KeyError(f"Column '{column}' not found in the dataset.")
+
+    subset = df.copy()
+    subset["Year"] = pd.to_numeric(subset["Year"], errors="coerce")
+    yearly_nulls = (
+        subset.groupby("Year")[column]
+        .apply(lambda s: s.isna().mean() * 100)
+        .sort_index()
+        .dropna()
+    )
+
+    print(f"Null percentages for '{column}' by year:")
+    for year, percentage in yearly_nulls.items():
+        print(f"{int(year)}: {percentage:.2f}%")
+
+    return yearly_nulls
+
+    
