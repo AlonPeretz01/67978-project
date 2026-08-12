@@ -168,3 +168,27 @@ Before finishing a visualization, verify:
 - [ ] Important reference values or unusual points are annotated when useful.
 - [ ] All text is comfortably readable at the final display/export size.
 - [ ] The plot reveals the data rather than decorating it.
+
+## 12. Project-specific conventions (67978)
+
+### Uncertainty
+Every proportion must carry a Wilson 95% confidence interval, shown as error
+bars. Annual response counts in this project vary by a factor of thirty-six
+(2,747 in 2011 to 98,855 in 2018), so points differ enormously in precision.
+A bare bar or marker implies a certainty the data does not have.
+
+### Non-comparable measurements
+Where a survey year uses a different instrument from the rest of the series
+(2015, 2016 and 2025 measure general rather than professional experience),
+plot those points as hollow, unconnected markers, never joined to the main
+line, with a legend entry naming them as non-comparable. Connecting them would
+imply a trend across measures that are not on the same scale.
+
+### Axes
+Percentage axes run 0–100 with a percent formatter, consistently across every
+figure in the project, so that figures can be compared directly.
+
+### Year facetting
+When a figure covers multiple survey years, split by year rather than pooling,
+unless the pooled view is itself the point. Pooling hides year-to-year movement,
+which is the primary question in this project.
