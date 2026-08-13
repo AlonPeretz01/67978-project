@@ -47,4 +47,4 @@ def cluster_developers(df: pd.DataFrame, n_clusters: int) -> pd.DataFrame:
 if __name__ == "__main__":
     df = pd.read_csv("data/processed/harmonized_stack_overflow_2011_2025.csv")
     df = df[df["Year"] == 2025]
-    df = cluster_developers(df, n_clusters=3)
+    df = cluster_developers(df, n_clusters=5)
