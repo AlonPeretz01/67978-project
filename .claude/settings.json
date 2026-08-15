@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c ' *)",
+      "Bash(git check-ignore *)",
+      "Bash(python main.py)",
+      "Bash(echo \"EXIT:$?\")",
+      "Read(//tmp/**)",
+      "Bash(tail -30 /tmp/pipeline_run.log)"
+    ]
+  }
+}

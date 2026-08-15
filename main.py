@@ -49,14 +49,41 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 PROCESSED_DATASET = (
     PROJECT_ROOT / "data" / "processed" / "harmonized_stack_overflow_2011_2025.csv"
 )
+HARMONIZATION_MODULE = PROJECT_ROOT / "src" / "cleaning" / "data_harmonization.py"
+CLEAN_DATA_DIRECTORY = PROJECT_ROOT / "data" / "clean"
 FIGURES_DIRECTORY = PROJECT_ROOT / "outputs" / "figures"
 AUDIT_DIRECTORY = PROJECT_ROOT / "outputs" / "audit"
 
 
-def load_processed_dataset(dataset_path: Path = PROCESSED_DATASET) -> pd.DataFrame:
-    """Load the harmonized dataset, building it from raw files when needed."""
+def _dataset_is_stale(dataset_path: Path) -> bool:
+    """True if the processed dataset is missing or older than its inputs.
+
+    This is the second time a stale, gitignored build artefact under
+    data/processed has silently diverged from the code/data that generates
+    it (see outputs/audit/CLUSTERING_CHECK.md for the first instance), so
+    staleness is checked automatically rather than relying on the file
+    merely existing.
+    """
     if not dataset_path.is_file():
-        print("Processed dataset missing; building it from data/raw.", flush=True)
+        return True
+    dataset_mtime = dataset_path.stat().st_mtime
+    if HARMONIZATION_MODULE.is_file() and HARMONIZATION_MODULE.stat().st_mtime > dataset_mtime:
+        return True
+    if CLEAN_DATA_DIRECTORY.is_dir():
+        for cleaned_file in CLEAN_DATA_DIRECTORY.rglob("*.csv"):
+            if cleaned_file.stat().st_mtime > dataset_mtime:
+                return True
+    return False
+
+
+def load_processed_dataset(dataset_path: Path = PROCESSED_DATASET) -> pd.DataFrame:
+    """Load the harmonized dataset, rebuilding it when missing or stale."""
+    if _dataset_is_stale(dataset_path):
+        print(
+            "Processed dataset missing or stale relative to its inputs; "
+            "rebuilding from data/raw.",
+            flush=True,
+        )
         run_harmonization_pipeline()
     if not dataset_path.is_file():
         raise FileNotFoundError(f"Processed dataset not found: {dataset_path}")

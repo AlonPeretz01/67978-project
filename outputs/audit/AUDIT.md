@@ -2,7 +2,7 @@
 Generated directly from the existing harmonized master dataset and existing source code. `NOT AVAILABLE` means the current repository does not define or retain the requested quantity.
 ## MASTER DATASET
 
-Total rows: **768404**  
+Total rows: **772603**  
 Total columns: **14**
 
 Exact column names:
@@ -28,12 +28,12 @@ Per-year row count:
 
 | Year | n |
 | --- | --- |
-| 2011 | 2747 |
-| 2012 | 5959 |
-| 2013 | 9056 |
-| 2014 | 7427 |
-| 2015 | 24460 |
-| 2016 | 54713 |
+| 2011 | 2814 |
+| 2012 | 6244 |
+| 2013 | 9743 |
+| 2014 | 7644 |
+| 2015 | 26086 |
+| 2016 | 56030 |
 | 2017 | 51392 |
 | 2018 | 98855 |
 | 2019 | 88883 |
@@ -52,21 +52,21 @@ Per-year non-null count for every current master column (the first 13 are the or
 
 | Year | Year | Age | Education_Level | Years_of_Experience | Employment_Status | Yearly_Compensation | Usage_Frequency | AI_Tool_Usage | AI_Usage_Status | Has_SO_account | Part_of_community | Participates_in_questions | Visits_SO_freq | experience_is_proxy |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2011 | 2747 | 2725 | 0 | 2725 | 2647 | 2366 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2747 |
-| 2012 | 5959 | 0 | 0 | 5920 | 5738 | 5238 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 5959 |
-| 2013 | 9056 | 0 | 0 | 9011 | 8218 | 7059 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 9056 |
-| 2014 | 7427 | 0 | 0 | 7344 | 7344 | 6898 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 7427 |
-| 2015 | 24460 | 24296 | 0 | 23768 | 22294 | 19481 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 24460 |
-| 2016 | 54713 | 54047 | 44955 | 49520 | 49518 | 41742 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 54713 |
-| 2017 | 51392 | 0 | 51392 | 40890 | 51392 | 12891 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 51392 |
-| 2018 | 98855 | 64574 | 94703 | 77903 | 95321 | 47702 | 76811 | 0 | 0 | 0 | 0 | 0 | 0 | 98855 |
-| 2019 | 88883 | 79210 | 86390 | 74331 | 87181 | 55823 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 88883 |
+| 2011 | 2814 | 2730 | 0 | 2730 | 2647 | 2366 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2814 |
+| 2012 | 6244 | 0 | 0 | 5965 | 5738 | 5238 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 6244 |
+| 2013 | 9743 | 0 | 0 | 9437 | 8219 | 7059 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 9743 |
+| 2014 | 7644 | 0 | 0 | 7347 | 7347 | 6901 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 7644 |
+| 2015 | 26086 | 25831 | 0 | 24827 | 22294 | 19481 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 26086 |
+| 2016 | 56030 | 55336 | 44955 | 49520 | 49519 | 41742 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 56030 |
+| 2017 | 51392 | 0 | 51392 | 40890 | 51392 | 12891 | 0 | 0 | 0 | 0 | 32410 | 0 | 0 | 51392 |
+| 2018 | 98855 | 64574 | 94703 | 77903 | 95321 | 47702 | 76811 | 0 | 0 | 0 | 76007 | 0 | 0 | 98855 |
+| 2019 | 88883 | 79210 | 86390 | 74331 | 87181 | 55823 | 0 | 0 | 0 | 0 | 88131 | 74692 | 88263 | 88883 |
 | 2020 | 64461 | 45446 | 57431 | 46349 | 63854 | 34756 | 0 | 0 | 0 | 56805 | 56476 | 46792 | 56970 | 64461 |
 | 2021 | 83439 | 82407 | 83126 | 61216 | 83323 | 46844 | 0 | 0 | 0 | 82525 | 82319 | 67553 | 82413 | 83439 |
 | 2022 | 73268 | 70946 | 71571 | 51833 | 71709 | 38071 | 0 | 0 | 0 | 71572 | 71408 | 58229 | 70961 | 73268 |
-| 2023 | 89184 | 89184 | 87973 | 66136 | 87898 | 48019 | 0 | 36137 | 87973 | 0 | 0 | 0 | 0 | 89184 |
-| 2024 | 65437 | 65437 | 60784 | 51610 | 65437 | 23435 | 0 | 35072 | 60907 | 0 | 0 | 0 | 0 | 65437 |
-| 2025 | 49123 | 49123 | 48087 | 43000 | 48277 | 23928 | 0 | 0 | 33686 | 0 | 0 | 0 | 0 | 49123 |
+| 2023 | 89184 | 89184 | 87973 | 66136 | 87898 | 48019 | 0 | 36137 | 87973 | 0 | 87692 | 66061 | 87140 | 89184 |
+| 2024 | 65437 | 65437 | 60784 | 51610 | 65437 | 23435 | 0 | 35072 | 60907 | 0 | 59163 | 45237 | 59536 | 65437 |
+| 2025 | 49123 | 49123 | 48087 | 43000 | 48277 | 23928 | 0 | 0 | 33686 | 32767 | 31678 | 32200 | 32680 | 49123 |
 
 ## EXPERIENCE COHORTS
 
@@ -91,12 +91,12 @@ def experience_cohort_weights(value: object) -> tuple[float, float, float]:
 
 | Year | n_total | n_with_valid_experience | junior count | junior proportion | junior Wilson 95% CI | mid count | mid proportion | mid Wilson 95% CI | senior count | senior proportion | senior Wilson 95% CI | junior > senior? |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2011 | 2747 | 2724 | 503.000000 | 0.184655 | [0.170531, 0.199667] | 685.400000 | 0.251615 | [0.235677, 0.268253] | 1535.600000 | 0.563730 | [0.545030, 0.582251] | NO |
-| 2012 | 5959 | 5919 | 1634.000000 | 0.276060 | [0.264819, 0.287591] | 1618.600000 | 0.273458 | [0.262253, 0.284958] | 2666.400000 | 0.450482 | [0.437843, 0.463185] | NO |
-| 2013 | 9056 | 9010 | 2272.000000 | 0.252164 | [0.243305, 0.261235] | 2314.000000 | 0.256826 | [0.247910, 0.265949] | 4424.000000 | 0.491010 | [0.480694, 0.501334] | NO |
-| 2014 | 7427 | 7343 | 2288.000000 | 0.311589 | [0.301097, 0.322279] | 1928.800000 | 0.262672 | [0.252732, 0.272860] | 3126.200000 | 0.425739 | [0.414471, 0.437084] | NO |
-| 2015 | 24460 | 23768 | 8554.500000 | 0.359917 | [0.353838, 0.366041] | 6040.700000 | 0.254153 | [0.248658, 0.259727] | 9172.800000 | 0.385931 | [0.379761, 0.392138] | NO |
-| 2016 | 54713 | 49520 | 16949.500000 | 0.342276 | [0.338109, 0.346467] | 12550.500000 | 0.253443 | [0.249631, 0.257293] | 20020.000000 | 0.404281 | [0.399966, 0.408611] | NO |
+| 2011 | 2814 | 2729 | 504.500000 | 0.184866 | [0.170748, 0.199870] | 687.300000 | 0.251850 | [0.235921, 0.268478] | 1537.200000 | 0.563283 | [0.544599, 0.581790] | NO |
+| 2012 | 6244 | 5964 | 1661.000000 | 0.278504 | [0.267273, 0.290021] | 1632.200000 | 0.273675 | [0.262509, 0.285134] | 2670.800000 | 0.447820 | [0.435238, 0.460470] | NO |
+| 2013 | 9743 | 9436 | 2437.000000 | 0.258266 | [0.249535, 0.267194] | 2448.400000 | 0.259474 | [0.250729, 0.268415] | 4550.600000 | 0.482259 | [0.472187, 0.492347] | NO |
+| 2014 | 7644 | 7346 | 2290.500000 | 0.311802 | [0.301310, 0.322491] | 1929.300000 | 0.262633 | [0.252695, 0.272818] | 3126.200000 | 0.425565 | [0.414300, 0.436907] | NO |
+| 2015 | 26086 | 24827 | 9038.500000 | 0.364059 | [0.358096, 0.370065] | 6326.100000 | 0.254807 | [0.249425, 0.260265] | 9462.400000 | 0.381133 | [0.375111, 0.387193] | NO |
+| 2016 | 56030 | 49520 | 16949.500000 | 0.342276 | [0.338109, 0.346467] | 12550.500000 | 0.253443 | [0.249631, 0.257293] | 20020.000000 | 0.404281 | [0.399966, 0.408611] | NO |
 | 2017 | 51392 | 40890 | 15091.500000 | 0.369076 | [0.364411, 0.373765] | 11127.500000 | 0.272133 | [0.267840, 0.276468] | 14671.000000 | 0.358792 | [0.354156, 0.363454] | YES |
 | 2018 | 98855 | 77903 | 30541.666667 | 0.392047 | [0.388625, 0.395481] | 21831.333333 | 0.280237 | [0.277095, 0.283402] | 25530.000000 | 0.327715 | [0.324428, 0.331020] | YES |
 | 2019 | 88883 | 74331 | 24198.000000 | 0.325544 | [0.322184, 0.328921] | 20902.000000 | 0.281202 | [0.277981, 0.284445] | 29231.000000 | 0.393254 | [0.389749, 0.396772] | NO |
@@ -119,18 +119,18 @@ Exact configured mapping dict:
 {'Age': 'Age', 'Years IT / Programming Experience': 'Years_of_Experience', 'Occupation': 'Employment_Status', 'Employment Status': 'Employment_Status', 'Compensation': 'Yearly_Compensation', 'Compensation: midpoint': 'Yearly_Compensation'}
 ```
 
-Non-null `Years_of_Experience` values in master: **23768**.
+Non-null `Years_of_Experience` values in master: **24827**.
 
 Raw distribution in the cleaned source file actually used by harmonization:
 
 | Raw source value | Count |
 | --- | --- |
-| '2 - 5 years' | 7631 |
-| '11+ years' | 5835 |
-| '6 - 10 years' | 5563 |
-| '1 - 2 years' | 3197 |
-| 'Less than 1 year' | 1542 |
-| <NULL> | 692 |
+| '2 - 5 years' | 8037 |
+| '11+ years' | 6001 |
+| '6 - 10 years' | 5769 |
+| '1 - 2 years' | 3373 |
+| 'Less than 1 year' | 1647 |
+| <NULL> | 1259 |
 
 ### 2016
 Exact source column(s) used: `experience_range`.
@@ -150,14 +150,14 @@ Raw distribution in the cleaned source file actually used by harmonization:
 | '2 - 5 years' | 15897 |
 | '11+ years' | 13117 |
 | '6 - 10 years' | 11505 |
+| <NULL> | 6510 |
 | '1 - 2 years' | 6119 |
-| <NULL> | 5193 |
 | 'Less than 1 year' | 2882 |
 
 
 ## RANDOM FOREST MODEL
 
-Exact target variable: **Part of the Stack Overflow community**; source harmonized column selected by `engagement_target`: `Part_of_community` (the visit column is evaluated only as a fallback). It appears with mapped binary values in years: 2022.
+Exact target variable: **Part of the Stack Overflow community**; source harmonized column selected by `engagement_target`: `Part_of_community` (the visit column is evaluated only as a fallback). It appears with mapped binary values in years: 2022, 2023, 2024, 2025.
 
 Binarization source code:
 
@@ -187,10 +187,10 @@ Class balance:
 
 | Class | Count | Proportion |
 | --- | --- | --- |
-| 0 | 40113 | 0.571671 |
-| 1 | 30055 | 0.428329 |
+| 0 | 159279 | 0.645340 |
+| 1 | 87535 | 0.354660 |
 
-Final labelled n used to fit the retained full reference model: **70168**. The separate reproducible stratified 70/30 held-out evaluation, including test metrics and permutation importance, is in `RF_EVAL.md`.
+Final labelled n used to fit the retained full reference model: **246814**. The separate reproducible stratified 70/30 held-out evaluation, including test metrics and permutation importance, is in `RF_EVAL.md`.
 
 Features actually fed to the estimator after the existing imputation/one-hot encoding:
 
@@ -201,8 +201,10 @@ Features actually fed to the estimator after the existing imputation/one-hot enc
 | Education_Level=Associate degree (A.A., A.S., etc.) | float64 |
 | Education_Level=Bachelor’s degree (B.A., B.S., B.Eng., etc.) | float64 |
 | Education_Level=Master’s degree (M.A., M.S., M.Eng., MBA, etc.) | float64 |
+| Education_Level=Other (please specify): | float64 |
 | Education_Level=Other doctoral degree (Ph.D., Ed.D., etc.) | float64 |
 | Education_Level=Primary/elementary school | float64 |
+| Education_Level=Professional degree (JD, MD, Ph.D, Ed.D, etc.) | float64 |
 | Education_Level=Professional degree (JD, MD, etc.) | float64 |
 | Education_Level=Secondary school (e.g. American high school, German Realschule or Gymnasium, etc.) | float64 |
 | Education_Level=Some college/university study without earning a degree | float64 |
@@ -218,9 +220,9 @@ Impurity-based `feature_importances_`, aggregated to the original source feature
 
 | Source feature | Importance |
 | --- | --- |
-| Years_of_Experience | 0.137420 |
-| Yearly_Compensation | 0.842433 |
-| Education_Level | 0.020147 |
+| Years_of_Experience | 0.085511 |
+| Yearly_Compensation | 0.894712 |
+| Education_Level | 0.019778 |
 
 ## PIECEWISE / STRUCTURAL BREAK REGRESSION
 
@@ -251,18 +253,18 @@ Input is annual `Junior_Proportion` for years 2011, 2012, 2013, 2014, 2015, 2016
 
 | Sample | Break year | n | Parameters | Coefficient | Estimate | SE | 95% CI | p-value | R-squared |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Full Dataset | 2020 | 15 | 3 | const | 0.366775 | 0.026330 | [0.309406, 0.424144] | 9.03346e-09 | 0.672986 |
-| Full Dataset | 2020 | 15 | 3 | time | 0.012682 | 0.005151 | [0.001458, 0.023906] | 0.0299423 | 0.672986 |
-| Full Dataset | 2020 | 15 | 3 | slope_change | -0.062000 | 0.013629 | [-0.091696, -0.032304] | 0.000667364 | 0.672986 |
-| Full Dataset | 2022 | 15 | 3 | const | 0.328116 | 0.032128 | [0.258114, 0.398117] | 2.85158e-07 | 0.511060 |
-| Full Dataset | 2022 | 15 | 3 | time | 0.004406 | 0.005035 | [-0.006565, 0.015377] | 0.39877 | 0.511060 |
-| Full Dataset | 2022 | 15 | 3 | slope_change | -0.077704 | 0.024738 | [-0.131604, -0.023803] | 0.008516 | 0.511060 |
-| 2014+ Truncated Sample | 2020 | 12 | 3 | const | 0.340646 | 0.026017 | [0.281792, 0.399500] | 3.65185e-07 | 0.782349 |
-| 2014+ Truncated Sample | 2020 | 12 | 3 | time | -0.001116 | 0.007670 | [-0.018467, 0.016235] | 0.887559 | 0.782349 |
-| 2014+ Truncated Sample | 2020 | 12 | 3 | slope_change | -0.041077 | 0.015234 | [-0.075538, -0.006615] | 0.0245384 | 0.782349 |
-| 2014+ Truncated Sample | 2022 | 12 | 3 | const | 0.290114 | 0.028280 | [0.226141, 0.354087] | 2.89168e-06 | 0.741779 |
-| 2014+ Truncated Sample | 2022 | 12 | 3 | time | -0.009417 | 0.006080 | [-0.023170, 0.004337] | 0.155821 | 0.741779 |
-| 2014+ Truncated Sample | 2022 | 12 | 3 | slope_change | -0.047595 | 0.021921 | [-0.097183, 0.001993] | 0.0579976 | 0.741779 |
+| Full Dataset | 2020 | 15 | 3 | const | 0.366646 | 0.026422 | [0.309077, 0.424214] | 9.43359e-09 | 0.671866 |
+| Full Dataset | 2020 | 15 | 3 | time | 0.012359 | 0.005169 | [0.001096, 0.023622] | 0.0340853 | 0.671866 |
+| Full Dataset | 2020 | 15 | 3 | slope_change | -0.061642 | 0.013677 | [-0.091441, -0.031843] | 0.000717778 | 0.671866 |
+| Full Dataset | 2022 | 15 | 3 | const | 0.327711 | 0.032142 | [0.257680, 0.397742] | 2.90315e-07 | 0.512369 |
+| Full Dataset | 2022 | 15 | 3 | time | 0.004131 | 0.005037 | [-0.006845, 0.015106] | 0.428192 | 0.512369 |
+| Full Dataset | 2022 | 15 | 3 | slope_change | -0.077255 | 0.024749 | [-0.131178, -0.023332] | 0.00882893 | 0.512369 |
+| 2014+ Truncated Sample | 2020 | 12 | 3 | const | 0.340411 | 0.026093 | [0.281384, 0.399439] | 3.76741e-07 | 0.782601 |
+| 2014+ Truncated Sample | 2020 | 12 | 3 | time | -0.001411 | 0.007693 | [-0.018813, 0.015990] | 0.858485 | 0.782601 |
+| 2014+ Truncated Sample | 2020 | 12 | 3 | slope_change | -0.040717 | 0.015279 | [-0.075280, -0.006154] | 0.0258365 | 0.782601 |
+| 2014+ Truncated Sample | 2022 | 12 | 3 | const | 0.289768 | 0.028293 | [0.225764, 0.353772] | 2.93245e-06 | 0.743341 |
+| 2014+ Truncated Sample | 2022 | 12 | 3 | time | -0.009628 | 0.006083 | [-0.023388, 0.004132] | 0.147907 | 0.743341 |
+| 2014+ Truncated Sample | 2022 | 12 | 3 | slope_change | -0.047235 | 0.021931 | [-0.096847, 0.002377] | 0.0596684 | 0.743341 |
 
 The reported `slope_change` p-value tests the coefficient on `max(0, year − break_year)`: a difference between post-break and pre-break slopes. The specification is continuous and has no level-shift term, so it tests neither a level shift nor a joint level-and-slope break. `slope variance 0.0011`: **NOT AVAILABLE: no statistic with that name or value is calculated in the repository.** It must not be treated as a model result without identifying its source.
 
@@ -270,95 +272,95 @@ The reported `slope_change` p-value tests the coefficient on `max(0, year − br
 
 Country is not retained in the 13-column master dataset; these figures are computed from each cleaned annual input, which is the closest available respondent-level source. Percentages use all rows in that annual cleaned file as the denominator. Western Europe is operationalized as UN M49 Western Europe (Austria, Belgium, France, Germany, Liechtenstein, Luxembourg, Monaco, Netherlands, Switzerland).
 
-### 2011 (source column: `What Country or Region do you live in?`; n = 2747)
+### 2011 (source column: `What Country or Region do you live in?`; n = 2814)
 
 | Country | Respondents | Proportion |
 | --- | --- | --- |
-| United States of America | 1026 | 0.373498 |
-| Other Europe | 428 | 0.155806 |
-| United Kingdom | 307 | 0.111758 |
-| Canada | 153 | 0.055697 |
-| Australia | 111 | 0.040408 |
-| Germany | 101 | 0.036767 |
-| India | 92 | 0.033491 |
-| South America | 90 | 0.032763 |
-| Other Asia | 78 | 0.028395 |
-| Middle East | 70 | 0.025482 |
+| United States of America | 1037 | 0.368515 |
+| Other Europe | 451 | 0.160270 |
+| United Kingdom | 314 | 0.111585 |
+| Canada | 156 | 0.055437 |
+| Australia | 112 | 0.039801 |
+| Germany | 106 | 0.037669 |
+| India | 95 | 0.033760 |
+| South America | 91 | 0.032338 |
+| Other Asia | 81 | 0.028785 |
+| Middle East | 73 | 0.025942 |
 
-### 2012 (source column: `What Country or Region do you live in?`; n = 5959)
-
-| Country | Respondents | Proportion |
-| --- | --- | --- |
-| United States of America | 1755 | 0.294513 |
-| Other Europe | 1108 | 0.185937 |
-| United Kingdom | 572 | 0.095989 |
-| India | 479 | 0.080383 |
-| Canada | 335 | 0.056217 |
-| Germany | 257 | 0.043128 |
-| Other Asia | 206 | 0.034570 |
-| South America | 178 | 0.029871 |
-| Australia | 175 | 0.029367 |
-| Russia | 152 | 0.025508 |
-
-### 2013 (source column: `What Country or Region do you live in?`; n = 9056)
+### 2012 (source column: `What Country or Region do you live in?`; n = 6244)
 
 | Country | Respondents | Proportion |
 | --- | --- | --- |
-| United States of America | 3101 | 0.342425 |
-| Other Europe | 1381 | 0.152496 |
-| United Kingdom | 870 | 0.096069 |
-| India | 662 | 0.073101 |
-| Germany | 515 | 0.056868 |
-| Canada | 463 | 0.051126 |
-| Other Asia | 331 | 0.036550 |
-| Australia | 236 | 0.026060 |
-| Russia | 225 | 0.024845 |
-| France | 221 | 0.024404 |
+| United States of America | 1785 | 0.285874 |
+| Other Europe | 1168 | 0.187060 |
+| United Kingdom | 589 | 0.094331 |
+| India | 537 | 0.086003 |
+| Canada | 348 | 0.055734 |
+| Germany | 273 | 0.043722 |
+| Other Asia | 221 | 0.035394 |
+| Australia | 185 | 0.029628 |
+| South America | 182 | 0.029148 |
+| Russia | 162 | 0.025945 |
 
-### 2014 (source column: `What Country do you live in?`; n = 7427)
-
-| Country | Respondents | Proportion |
-| --- | --- | --- |
-| United States | 2083 | 0.280463 |
-| India | 849 | 0.114313 |
-| United Kingdom | 702 | 0.094520 |
-| Germany | 441 | 0.059378 |
-| Canada | 289 | 0.038912 |
-| France | 198 | 0.026659 |
-| Australia | 179 | 0.024101 |
-| Russia | 155 | 0.020870 |
-| Netherlands | 152 | 0.020466 |
-| Poland | 126 | 0.016965 |
-
-### 2015 (source column: `Country`; n = 24460)
+### 2013 (source column: `What Country or Region do you live in?`; n = 9743)
 
 | Country | Respondents | Proportion |
 | --- | --- | --- |
-| United States | 4482 | 0.183238 |
-| United Kingdom | 2244 | 0.091742 |
-| India | 2138 | 0.087408 |
-| Germany | 1822 | 0.074489 |
-| Canada | 788 | 0.032216 |
-| Poland | 751 | 0.030703 |
-| France | 735 | 0.030049 |
-| Russian Federation | 604 | 0.024693 |
-| Australia | 601 | 0.024571 |
-| Netherlands | 594 | 0.024285 |
+| United States of America | 3181 | 0.326491 |
+| Other Europe | 1626 | 0.166889 |
+| United Kingdom | 935 | 0.095966 |
+| India | 737 | 0.075644 |
+| Germany | 583 | 0.059838 |
+| Canada | 490 | 0.050293 |
+| Other Asia | 367 | 0.037668 |
+| Australia | 246 | 0.025249 |
+| Russia | 241 | 0.024736 |
+| France | 232 | 0.023812 |
 
-### 2016 (source column: `country`; n = 54713)
+### 2014 (source column: `What Country do you live in?`; n = 7644)
 
 | Country | Respondents | Proportion |
 | --- | --- | --- |
-| United States | 13153 | 0.240400 |
-| United Kingdom | 4487 | 0.082010 |
-| India | 3903 | 0.071336 |
-| Germany | 3768 | 0.068868 |
-| Canada | 1981 | 0.036207 |
-| Poland | 1886 | 0.034471 |
-| France | 1595 | 0.029152 |
-| Russian Federation | 1363 | 0.024912 |
-| Sweden | 1311 | 0.023961 |
-| Netherlands | 1173 | 0.021439 |
+| United States | 2128 | 0.278388 |
+| India | 881 | 0.115254 |
+| United Kingdom | 721 | 0.094322 |
+| Germany | 455 | 0.059524 |
+| Canada | 306 | 0.040031 |
+| France | 198 | 0.025903 |
+| Australia | 182 | 0.023810 |
+| Russia | 166 | 0.021716 |
+| Netherlands | 154 | 0.020147 |
+| Poland | 131 | 0.017138 |
+
+### 2015 (source column: `Country`; n = 26086)
+
+| Country | Respondents | Proportion |
+| --- | --- | --- |
+| United States | 4745 | 0.181898 |
+| India | 2461 | 0.094342 |
+| United Kingdom | 2403 | 0.092118 |
+| Germany | 1976 | 0.075749 |
+| Poland | 833 | 0.031933 |
+| Canada | 828 | 0.031741 |
+| France | 776 | 0.029748 |
+| Russian Federation | 650 | 0.024918 |
+| Australia | 618 | 0.023691 |
+| Netherlands | 614 | 0.023538 |
+
+### 2016 (source column: `country`; n = 56030)
+
+| Country | Respondents | Proportion |
+| --- | --- | --- |
+| United States | 13539 | 0.241638 |
+| United Kingdom | 4573 | 0.081617 |
+| India | 4193 | 0.074835 |
+| Germany | 3883 | 0.069302 |
+| Canada | 2024 | 0.036124 |
+| Poland | 1971 | 0.035178 |
+| France | 1626 | 0.029020 |
+| Russian Federation | 1419 | 0.025326 |
+| Sweden | 1328 | 0.023702 |
+| Netherlands | 1188 | 0.021203 |
 
 ### 2017 (source column: `Country`; n = 51392)
 
@@ -499,12 +501,12 @@ US + Canada + Western Europe:
 
 | Year | Respondents | Proportion |
 | --- | --- | --- |
-| 2011 | 1393 | 0.507099 |
-| 2012 | 2612 | 0.438329 |
-| 2013 | 4496 | 0.496466 |
-| 2014 | 3368 | 0.453481 |
-| 2015 | 9349 | 0.382216 |
-| 2016 | 23296 | 0.425785 |
+| 2011 | 1414 | 0.502488 |
+| 2012 | 2677 | 0.428732 |
+| 2013 | 4693 | 0.481679 |
+| 2014 | 3454 | 0.451858 |
+| 2015 | 9905 | 0.379706 |
+| 2016 | 23891 | 0.426397 |
 | 2017 | 21942 | 0.426954 |
 | 2018 | 37183 | 0.376137 |
 | 2019 | 37065 | 0.417009 |
@@ -519,7 +521,7 @@ US + Canada + Western Europe:
 
 Is the 2025 file loaded into the master dataset? **YES**.
 
-Core variables with at least one non-null 2025 value: `Year`, `Age`, `Education_Level`, `Years_of_Experience`, `Employment_Status`, `Yearly_Compensation`, `AI_Usage_Status`.
+Core variables with at least one non-null 2025 value: `Year`, `Age`, `Education_Level`, `Years_of_Experience`, `Employment_Status`, `Yearly_Compensation`, `AI_Usage_Status`, `Has_SO_account`, `Part_of_community`, `Participates_in_questions`, `Visits_SO_freq`.
 
 `Years_of_Experience` is sourced from configured column(s) `YearsCode`; the cleaned 2025 input contains experience-like column(s) `YearsCode`. `YearsCodePro` is genuinely absent from raw 2025, so the available `YearsCode` is used as a tagged proxy (`experience_is_proxy=True`) rather than treated as professional experience.
 
