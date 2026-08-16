@@ -165,6 +165,7 @@ schema_mapping = {
         'YearsCode': 'Years_of_Experience',
         'ConvertedCompYearly': 'Yearly_Compensation',
         'AISelect': 'AI_Usage_Status',
+        'SOAccount': 'Has_SO_account',
         'SOPartFreq': 'Participates_in_questions',
         'SOComm': 'Part_of_community',
         'SOVisitFreq': 'Visits_SO_freq'
@@ -179,6 +180,8 @@ def harmonize_schema(df, year):
     mapping = schema_mapping.get(year, {})
     harmonized = pd.DataFrame(index=df.index)
     harmonized['Year'] = year
+
+    expected_targets = set(mapping.values())
 
     for target in TARGET_COLUMNS[1:]:
         source_columns = [
@@ -202,12 +205,24 @@ def harmonize_schema(df, year):
                 ', '.join(source_columns),
             )
 
+    collapsed_targets = [
+        target for target in expected_targets
+        if target in harmonized.columns and harmonized[target].notna().sum() == 0
+    ]
+    if expected_targets and len(collapsed_targets) > len(expected_targets) / 2:
+        raise ValueError(
+            f"{year}: {len(collapsed_targets)} of {len(expected_targets)} columns "
+            f"schema_mapping expects for this year are entirely null "
+            f"({', '.join(sorted(collapsed_targets))}). A single sparse column is "
+            f"expected sometimes, but this many failing at once means the cleaned "
+            f"input likely lost its expected raw columns (e.g. a misread header "
+            f"renaming them all to 'Unnamed: N') before harmonization ran."
+        )
+
     experience_is_proxy = (
         year in EXPERIENCE_PROXY_YEARS
         and harmonized['Years_of_Experience'].notna()
     )
-    print(year)
-    print(harmonized['Part_of_community'].value_counts(dropna=False))
     harmonized['experience_is_proxy'] = experience_is_proxy
     return harmonized.reindex(columns=[*TARGET_COLUMNS, 'experience_is_proxy'])
 

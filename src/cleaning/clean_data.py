@@ -89,19 +89,17 @@ def clean_survey_data():
                 year,
                 MULTIROW_HEADER_YEARS[year] + 1,
             )
-        # try:
-        #     df = pd.read_csv(file_path, **read_options)
-        # except UnicodeDecodeError:
-        #     df = pd.read_csv(file_path, encoding="latin1", **read_options)
-        # file_extension = os.path.splitext(file_path)[1].lower()
-        # if file_extension in {'.xls', '.xlsx', '.xlsm', '.xlsb', '.ods'}:
-        #     df = pd.read_excel(file_path)
-        # else:
         print(f"Reading file: {file_path}")
+        print(f"  read_options: {read_options}")
         try:
-            df = pd.read_csv(file_path, low_memory=False)
+            df = pd.read_csv(file_path, **read_options)
         except UnicodeDecodeError:
-            df = pd.read_csv(file_path, low_memory=False, encoding='latin1')
+            df = pd.read_csv(file_path, encoding="latin1", **read_options)
+
+        first_columns = list(df.columns[:3])
+        print(f"  first columns obtained: {first_columns}")
+        if any(str(column).startswith("Unnamed:") for column in first_columns):
+            print(f"  WARNING: {year} columns look unnamed; header row was likely misread.")
 
         original_columns = df.columns
         df = clean_dataframe(df, missing_column_threshold=THRESHOLD)
