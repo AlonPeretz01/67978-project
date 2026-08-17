@@ -54,14 +54,19 @@ def plot_cluster_heatmap(
     """
     matrix = _cluster_heatmap_matrix(labeled, n_clusters)
 
+    vmin = float(matrix.values.min())
+    vmax = float(matrix.values.max())
+    if vmin == vmax:
+        vmin, vmax = 0.0, 1.0
+
     fig_height = max(5.5, 0.35 * len(matrix) + 2.0)
     fig, ax = plt.subplots(figsize=(max(8, 1.6 * n_clusters + 4), fig_height))
     sns.heatmap(
         matrix,
         ax=ax,
-        cmap="viridis",
-        vmin=0.0,
-        vmax=1.0,
+        cmap="plasma",
+        vmin=vmin,
+        vmax=vmax,
         annot=True,
         fmt=".0%",
         linewidths=0.4,
