@@ -8,7 +8,7 @@ Adopter = `AISelect` answer that starts with "Yes" (harmonizes the 2025 daily/we
 |---|---|---|---|---|---|---|---|---|---|
 | 2023 | 89,184 | `AISelect` | 87,973 | `AIToolCurrently Using` | 36,137 | 44.4% | [44.1%, 44.7%] | `YearsCodePro` | no |
 | 2024 | 65,437 | `AISelect` | 60,907 | `AIToolCurrently Using` | 35,072 | 61.8% | [61.4%, 62.2%] | `YearsCodePro` | no |
-| 2025 | 49,191 | `AISelect` | 33,720 | `(absent this year)` | 0 | 78.5% | [78.1%, 78.9%] | `YearsCode` | YES |
+| 2025 | 49,123 | `AISelect` | 33,686 | `(absent this year)` | 0 | 78.5% | [78.0%, 78.9%] | `YearsCode` | YES |
 
 **Overlap of the two AI variables (non-null rows):** 2023: 36,137 rows have BOTH AI_Usage_Status and AI_Tool_Usage non-null; 2024: 35,072 rows have BOTH AI_Usage_Status and AI_Tool_Usage non-null; 2025: 0 rows have BOTH AI_Usage_Status and AI_Tool_Usage non-null (AI_Tool_Usage absent this year).
 
@@ -30,9 +30,9 @@ Adopter = `AISelect` answer that starts with "Yes" (harmonizes the 2025 daily/we
 | 2024 | Junior (<=3 yrs) | 13,254 | 9,389 | 70.8% | [70.1%, 71.6%] | no |
 | 2024 | Mid (4-7 yrs) | 11,782 | 7,778 | 66.0% | [65.2%, 66.9%] | no |
 | 2024 | Senior (>=8 yrs) | 25,262 | 13,979 | 55.3% | [54.7%, 55.9%] | no |
-| 2025 | Junior (<=3 yrs) | 1,909 | 1,601 | 83.9% | [82.1%, 85.4%] | YES |
-| 2025 | Mid (4-7 yrs) | 5,466 | 4,629 | 84.7% | [83.7%, 85.6%] | YES |
-| 2025 | Senior (>=8 yrs) | 25,899 | 19,908 | 76.9% | [76.4%, 77.4%] | YES |
+| 2025 | Junior (<=3 yrs) | 1,907 | 1,600 | 83.9% | [82.2%, 85.5%] | YES |
+| 2025 | Mid (4-7 yrs) | 5,457 | 4,622 | 84.7% | [83.7%, 85.6%] | YES |
+| 2025 | Senior (>=8 yrs) | 25,876 | 19,885 | 76.8% | [76.3%, 77.4%] | YES |
 
 ## Adoption by age band
 
@@ -53,9 +53,9 @@ Adopter = `AISelect` answer that starts with "Yes" (harmonizes the 2025 daily/we
 | 2024 | 55-64 years old | 2,485 | 1,016 | 40.9% | [39.0%, 42.8%] |
 | 2024 | 65 years or older | 744 | 240 | 32.3% | [29.0%, 35.7%] |
 | 2025 | Under 18 years old | 0 | 0 | n/a | [n/a, n/a] |
-| 2025 | 18-24 years old | 5,533 | 4,424 | 80.0% | [78.9%, 81.0%] |
-| 2025 | 25-34 years old | 10,955 | 8,959 | 81.8% | [81.0%, 82.5%] |
-| 2025 | 35-44 years old | 9,462 | 7,581 | 80.1% | [79.3%, 80.9%] |
-| 2025 | 45-54 years old | 4,725 | 3,653 | 77.3% | [76.1%, 78.5%] |
+| 2025 | 18-24 years old | 5,529 | 4,421 | 80.0% | [78.9%, 81.0%] |
+| 2025 | 25-34 years old | 10,936 | 8,940 | 81.7% | [81.0%, 82.5%] |
+| 2025 | 35-44 years old | 9,456 | 7,576 | 80.1% | [79.3%, 80.9%] |
+| 2025 | 45-54 years old | 4,720 | 3,649 | 77.3% | [76.1%, 78.5%] |
 | 2025 | 55-64 years old | 2,093 | 1,354 | 64.7% | [62.6%, 66.7%] |
 | 2025 | 65 years or older | 755 | 378 | 50.1% | [46.5%, 53.6%] |

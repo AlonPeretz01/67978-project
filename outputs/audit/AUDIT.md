@@ -220,9 +220,9 @@ Impurity-based `feature_importances_`, aggregated to the original source feature
 
 | Source feature | Importance |
 | --- | --- |
-| Years_of_Experience | 0.085511 |
-| Yearly_Compensation | 0.894712 |
-| Education_Level | 0.019778 |
+| Years_of_Experience | 0.084568 |
+| Yearly_Compensation | 0.895511 |
+| Education_Level | 0.019921 |
 
 ## PIECEWISE / STRUCTURAL BREAK REGRESSION
 

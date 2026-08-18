@@ -37,15 +37,17 @@ from src.analysis.ai_adoption import (
     YEAR_CONFIG,
     AGE_ORDER,
     COHORT_ORDER,
+    default_raw_dir,
     parse_experience_years,
     experience_to_cohort,
     is_adopter,
+    raw_year_path,
 )
 
 
 def load_year_full(raw_dir: Path, year: int) -> pd.DataFrame:
     cfg = YEAR_CONFIG[year]
-    path = raw_dir / f"results_{year}.csv"
+    path = raw_year_path(raw_dir, year)
     cols = pd.read_csv(path, nrows=0).columns.tolist()
     use = [c for c in (cfg["ai_status"], cfg["experience"], cfg["age"]) if c in cols]
     raw = pd.read_csv(path, usecols=use, low_memory=False)
@@ -150,14 +152,13 @@ def run(raw_dir: Path, out_dir: Path, fig_dir: Path) -> dict:
         lines.append(f"| {int(year)} | " + " | ".join(_pct(v) for v in g["response_rate"].values) + " |")
     (out_dir / "ai_nonresponse_2023_2025.md").write_text("\n".join(lines), encoding="utf-8")
 
-    return {"by_age": by_age, "by_sen": by_sen, "bounds": bounds}
+    return {"by_age": by_age, "by_sen": by_sen, "bounds": bounds, "rows": df}
 
 
 def main() -> int:
     here = Path(__file__).resolve()
     project_root = here.parents[2]
-    candidates = [project_root / "data" / "raw", project_root.parent / "data" / "raw"]
-    raw_dir = next((c for c in candidates if (c / "results_2023.csv").is_file()), candidates[0])
+    raw_dir = default_raw_dir(project_root)
     res = run(raw_dir, project_root / "outputs" / "ai", project_root / "outputs" / "figures")
     print(res["bounds"].to_string(index=False))
     print("\nResponse rate by seniority:")

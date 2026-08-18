@@ -142,10 +142,27 @@ def is_adopter(status: object) -> object:
 # Loading
 # --------------------------------------------------------------------------
 
+def raw_year_path(raw_dir: Path, year: int) -> Path:
+    """Locate one year's raw public survey file.
+
+    This repository stores the raw files as ``data/raw/<year>/
+    survey_results_public.csv``; the flat ``results_<year>.csv`` name is
+    accepted as a fallback so the module still runs against an export that
+    uses it.
+    """
+    nested = raw_dir / str(year) / "survey_results_public.csv"
+    if nested.is_file():
+        return nested
+    flat = raw_dir / f"results_{year}.csv"
+    if flat.is_file():
+        return flat
+    raise FileNotFoundError(f"No raw survey file for {year} under {raw_dir}")
+
+
 def load_year(raw_dir: Path, year: int) -> pd.DataFrame:
     """Load only the relevant columns for one survey year into a tidy frame."""
     cfg = YEAR_CONFIG[year]
-    path = raw_dir / f"results_{year}.csv"
+    path = raw_year_path(raw_dir, year)
     available = pd.read_csv(path, nrows=0).columns.tolist()
 
     usecols = [cfg["ai_status"], cfg["experience"], cfg["age"]]
@@ -273,6 +290,69 @@ def adoption_by_age(df: pd.DataFrame) -> pd.DataFrame:
         for age in AGE_ORDER:
             sub = g[g["Age"] == age]
             rows.append(_rate_row({"Year": year, "Age": age}, sub["is_adopter"]))
+    return pd.DataFrame(rows)
+
+
+def value_inventory(df: pd.DataFrame, column: str) -> pd.DataFrame:
+    """Every distinct raw answer of ``column`` with its per-year count.
+
+    Nulls are reported as an explicit ``(null)`` row so each year's counts sum
+    to that year's respondent total.  This is what makes the harmonization
+    rules (e.g. "adopter = answer starts with Yes") checkable against the
+    actual wording each year used.
+    """
+    rows = []
+    for year, group in df.groupby("Year"):
+        values = group[column]
+        counts = values.value_counts(dropna=True)
+        for value, count in counts.items():
+            rows.append(
+                {
+                    "Year": int(year),
+                    "raw_value": str(value),
+                    "count": int(count),
+                    "share_of_year": int(count) / len(group),
+                }
+            )
+        null_count = int(values.isna().sum())
+        rows.append(
+            {
+                "Year": int(year),
+                "raw_value": "(null)",
+                "count": null_count,
+                "share_of_year": null_count / len(group),
+            }
+        )
+    return pd.DataFrame(rows).sort_values(["Year", "count"], ascending=[True, False]).reset_index(drop=True)
+
+
+def option_inventory(df: pd.DataFrame, column: str, separator: str = ";") -> pd.DataFrame:
+    """Per-option counts for a multi-select column, per year.
+
+    ``AI_Tool_Usage`` is a multi-select whose raw answers are semicolon-joined
+    option lists, so its distinct-value count runs to four figures. Splitting
+    on the separator gives the count of respondents who selected each
+    individual option; these do not sum to the respondent total, because one
+    respondent may select several.
+    """
+    rows = []
+    for year, group in df.groupby("Year"):
+        answered = group[column].dropna()
+        counts: dict[str, int] = {}
+        for value in answered:
+            for option in str(value).split(separator):
+                option = option.strip()
+                if option:
+                    counts[option] = counts.get(option, 0) + 1
+        for option, count in sorted(counts.items(), key=lambda item: -item[1]):
+            rows.append(
+                {
+                    "Year": int(year),
+                    "option": option,
+                    "count": count,
+                    "share_of_answered": count / len(answered) if len(answered) else math.nan,
+                }
+            )
     return pd.DataFrame(rows)
 
 
@@ -448,18 +528,36 @@ def run(raw_dir: Path, out_dir: Path, fig_dir: Path) -> dict:
     plot_by_age(age_df, fig_dir / "ai_adoption_by_age.png")
     plot_status_composition(comp, fig_dir / "ai_status_composition.png")
 
-    return {"summary": summary, "seniority": sen, "age": age_df, "composition": comp}
+    return {
+        "summary": summary,
+        "seniority": sen,
+        "age": age_df,
+        "composition": comp,
+        "overlap_note": overlap_note,
+        # Row-level frame and raw-answer inventories, so the audit report can
+        # trace every published rate back to the wording each year used.
+        "rows": df,
+        "status_inventory": value_inventory(df, "AI_Usage_Status"),
+        "tool_inventory": value_inventory(df, "AI_Tool_Usage"),
+        "tool_option_inventory": option_inventory(df, "AI_Tool_Usage"),
+    }
+
+
+def default_raw_dir(project_root: Path) -> Path:
+    """Resolve the raw survey directory for either supported layout."""
+    candidates = [project_root / "data" / "raw", project_root.parent / "data" / "raw"]
+    for candidate in candidates:
+        if (candidate / "2023" / "survey_results_public.csv").is_file() or (
+            candidate / "results_2023.csv"
+        ).is_file():
+            return candidate
+    return candidates[0]
 
 
 def main() -> int:
     here = Path(__file__).resolve()
     project_root = here.parents[2]
-    # Default raw dir: sibling project data folder (../../.. /data/raw), else env.
-    candidates = [
-        project_root / "data" / "raw",
-        project_root.parent / "data" / "raw",
-    ]
-    raw_dir = next((c for c in candidates if (c / "results_2023.csv").is_file()), candidates[0])
+    raw_dir = default_raw_dir(project_root)
     out_dir = project_root / "outputs" / "ai"
     fig_dir = project_root / "outputs" / "figures"
     print(f"Reading raw survey files from: {raw_dir}")

@@ -22,8 +22,9 @@ from src.analysis.analyze_post_corona import (
 from src.analysis.SO_analysis import (
     is_part_of_community,
     visit_over_time,
-    count_null_percentages,
 )
+from src.analysis import ai_adoption, ai_nonresponse
+from src.analysis.cluster_developers import run_cluster_analysis
 from src.analysis.audit_dataset import audit_dataset
 from src.cleaning.clean_data import clean_dataframe
 from src.cleaning.data_harmonization import run_harmonization_pipeline
@@ -35,7 +36,9 @@ from src.visualization.plot_nulls import (
     plot_null_distribution_by_year,
     plot_null_percentages,
 )
+from scripts.audit.generate_ai_analysis import write_ai_analysis
 from scripts.audit.generate_audit import write_audit
+from scripts.audit.generate_clustering import write_clustering
 from scripts.audit.generate_followup import (
     write_reconciliation,
     write_rf_eval,
@@ -51,8 +54,31 @@ PROCESSED_DATASET = (
 )
 HARMONIZATION_MODULE = PROJECT_ROOT / "src" / "cleaning" / "data_harmonization.py"
 CLEAN_DATA_DIRECTORY = PROJECT_ROOT / "data" / "clean"
+RAW_DATA_DIRECTORY = PROJECT_ROOT / "data" / "raw"
 FIGURES_DIRECTORY = PROJECT_ROOT / "outputs" / "figures"
 AUDIT_DIRECTORY = PROJECT_ROOT / "outputs" / "audit"
+AI_DIRECTORY = PROJECT_ROOT / "outputs" / "ai"
+
+# Every stage name printed by run_pipeline, in order.  The list drives both
+# the STAGE numbering and the "N" in "STAGE xx/N", so adding a stage cannot
+# leave the two out of step.
+STAGE_NAMES = (
+    "load master dataset",
+    "clean and audit master data",
+    "prepare analysis summaries",
+    "write master audit",
+    "verify cohort audit values",
+    "generate pipeline figures",
+    "run AI adoption analysis",
+    "cluster developers with k-modes",
+    "write cohort reconciliation",
+    "evaluate reference random forest",
+    "write robustness analysis",
+    "write proxy-bias audit",
+    "write AI analysis audit",
+    "write clustering audit",
+    "verify figure freshness",
+)
 
 
 def _dataset_is_stale(dataset_path: Path) -> bool:
@@ -96,9 +122,15 @@ def run_pipeline(dataset_path: Path = PROCESSED_DATASET) -> dict[str, Any]:
     stage = 0
 
     def report_stage(name: str) -> None:
+        """Print the next stage banner, enforcing the declared stage order."""
         nonlocal stage
+        if stage >= len(STAGE_NAMES) or STAGE_NAMES[stage] != name:
+            expected = STAGE_NAMES[stage] if stage < len(STAGE_NAMES) else "(no further stages)"
+            raise RuntimeError(
+                f"Stage {stage + 1} is {name!r} but STAGE_NAMES declares {expected!r}."
+            )
         stage += 1
-        print(f"STAGE {stage:02d}/11: {name}", flush=True)
+        print(f"STAGE {stage:02d}/{len(STAGE_NAMES)}: {name}", flush=True)
 
     report_stage("load master dataset")
     raw_dataframe = load_processed_dataset(dataset_path)
@@ -168,9 +200,19 @@ def run_pipeline(dataset_path: Path = PROCESSED_DATASET) -> dict[str, Any]:
         cleaned_dataframe,
         FIGURES_DIRECTORY / "visits_so_freq_2017_2025.png",
     )
-    count_null_percentages(
-        cleaned_dataframe,
-        "Part_of_community",
+
+    # The AI and clustering analyses each run once here and hand their tables
+    # to the matching audit stage below, so the published figures and the
+    # audit reports can never come from two different fits.
+    report_stage("run AI adoption analysis")
+    AI_DIRECTORY.mkdir(parents=True, exist_ok=True)
+    ai_adoption_results = ai_adoption.run(RAW_DATA_DIRECTORY, AI_DIRECTORY, FIGURES_DIRECTORY)
+    ai_nonresponse_results = ai_nonresponse.run(RAW_DATA_DIRECTORY, AI_DIRECTORY, FIGURES_DIRECTORY)
+
+    report_stage("cluster developers with k-modes")
+    clustering_results = run_cluster_analysis(
+        raw_dataframe,
+        FIGURES_DIRECTORY / "cluster_developers_heatmap.png",
     )
 
     report_stage("write cohort reconciliation")
@@ -181,8 +223,17 @@ def run_pipeline(dataset_path: Path = PROCESSED_DATASET) -> dict[str, Any]:
     write_robustness(raw_dataframe)
     report_stage("write proxy-bias audit")
     write_proxy_bias(raw_dataframe)
+    report_stage("write AI analysis audit")
+    write_ai_analysis(ai_adoption_results, ai_nonresponse_results, raw_dataframe)
+    report_stage("write clustering audit")
+    write_clustering(clustering_results)
     report_stage("verify figure freshness")
     write_figure_sweep(run_started)
+
+    if stage != len(STAGE_NAMES):
+        raise RuntimeError(
+            f"Ran {stage} stages but STAGE_NAMES declares {len(STAGE_NAMES)}."
+        )
 
     return {
         "audit": audit_report,
@@ -190,7 +241,9 @@ def run_pipeline(dataset_path: Path = PROCESSED_DATASET) -> dict[str, Any]:
         "null_summary": null_summary,
         "post_corona_data": post_corona_dataframe,
         "demographic_summary": demographic_summary,
+        "clustering": clustering_results,
         "audit_directory": AUDIT_DIRECTORY,
+        "stage_count": stage,
     }
 
 

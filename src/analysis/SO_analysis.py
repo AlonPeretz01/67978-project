@@ -125,27 +125,10 @@ def visit_over_time(df: pd.DataFrame, output_path: str | Path) -> pd.DataFrame:
     plt.close(fig)
     return metrics.reset_index(names="Year")
 
-def count_null_percentages(df: pd.DataFrame, column: str) -> pd.Series:
-    """
-    Count the percentage of null values for a specific column in the given
-    DataFrame by survey year, then print each year's percentage.
-    """
-    if column not in df.columns:
-        raise KeyError(f"Column '{column}' not found in the dataset.")
 
-    subset = df.copy()
-    subset["Year"] = pd.to_numeric(subset["Year"], errors="coerce")
-    yearly_nulls = (
-        subset.groupby("Year")[column]
-        .apply(lambda s: s.isna().mean() * 100)
-        .sort_index()
-        .dropna()
-    )
-
-    print(f"Null percentages for '{column}' by year:")
-    for year, percentage in yearly_nulls.items():
-        print(f"{int(year)}: {percentage:.2f}%")
-
-    return yearly_nulls
-
-    
+# NOTE: `count_null_percentages` used to live here purely to print per-year
+# null percentages for `Part_of_community` to the console during the pipeline
+# run.  It has been removed twice now, reappearing through a merge the first
+# time.  Do not reintroduce it: the FACT CHECK table in
+# outputs/audit/AUDIT.md already carries the per-year non-null counts, so the
+# console print is redundant output with no reader.

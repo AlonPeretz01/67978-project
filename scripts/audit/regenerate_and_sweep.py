@@ -20,6 +20,14 @@ FIGURE_GENERATORS = {
     "post_corona_fulltime_participation.png": ("OUT OF SCOPE: post-corona pipeline", True),
     "post_corona_fulltime_participation_distribution.png": ("OUT OF SCOPE: post-corona pipeline", True),
     "post_corona_participation_by_age.png": ("OUT OF SCOPE: post-corona pipeline", True),
+    "part_of_community_2017_2025.png": ("src.analysis.SO_analysis.is_part_of_community", True),
+    "visits_so_freq_2017_2025.png": ("src.analysis.SO_analysis.visit_over_time", True),
+    "ai_adoption_by_age.png": ("src.analysis.ai_adoption.plot_by_age", True),
+    "ai_adoption_by_seniority.png": ("src.analysis.ai_adoption.plot_by_seniority", True),
+    "ai_status_composition.png": ("src.analysis.ai_adoption.plot_status_composition", True),
+    "ai_response_rate_by_age.png": ("src.analysis.ai_nonresponse.plot_response_rate", True),
+    "ai_response_rate_by_seniority.png": ("src.analysis.ai_nonresponse.plot_response_rate", True),
+    "cluster_developers_heatmap.png": ("src.analysis.cluster_developers.plot_cluster_heatmap", True),
 }
 
 
@@ -37,7 +45,10 @@ def write_figure_sweep(started: datetime) -> Path:
     content += "| File | Modification timestamp | Freshness | Generating function | Called by `main.py`? |\n| --- | --- | --- | --- | --- |\n"
     content += "\n".join("| " + " | ".join(row) + " |" for row in rows) + "\n\n"
     unreachable = [row[0] for row in rows if row[4] == "NO"]
-    content += "Figures not reachable from `main.py`: " + (", ".join(unreachable) if unreachable else "NONE") + ".\n"
+    stale = [row[0] for row in rows if row[2] != "CURRENT"]
+    content += "Figures not reachable from `main.py`: " + (", ".join(unreachable) if unreachable else "NONE") + ".\n\n"
+    content += "Stale figures (not rewritten by this run): " + (", ".join(stale) if stale else "NONE") + ".\n\n"
+    content += f"Totals: {len(rows)} figures, {len(unreachable)} unreachable, {len(stale)} stale.\n"
     OUTPUT_PATH.write_text(content, encoding="utf-8")
     return OUTPUT_PATH
 
