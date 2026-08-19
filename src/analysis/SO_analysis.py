@@ -83,7 +83,7 @@ def is_part_of_community(df: pd.DataFrame, output_path: str | Path) -> pd.DataFr
 def visit_over_time(df: pd.DataFrame, output_path: str | Path) -> pd.DataFrame:
     """
     Plot the yearly share of respondents who visit Stack Overflow at least a
-    few times per month, for years 2018-2025, using `Visits_SO_freq`.
+   few times per month, for years 2019-2025, using `Participates_in_questions`.
     """
     subset = df.copy()
     subset["Year"] = pd.to_numeric(subset["Year"], errors="coerce")
@@ -115,7 +115,7 @@ def visit_over_time(df: pd.DataFrame, output_path: str | Path) -> pd.DataFrame:
     )
     _base_axes(
         ax,
-        "Frequent Stack Overflow participation declined over time, 2018-2025",
+        "Frequent Stack Overflow participation declined over time, 2019-2025",
         "Share of respondents",
     )
     ax.set_xticks(VISIT_YEAR_RANGE)
