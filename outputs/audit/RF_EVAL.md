@@ -17,24 +17,24 @@ Permutation importance uses test-set accuracy, n_repeats=10, random_state=42. En
 
 | Encoded feature | Mean decrease | Std |
 | --- | --- | --- |
-| Years_of_Experience | 0.014463 | 0.001717 |
-| Yearly_Compensation | 0.024804 | 0.001583 |
+| Years_of_Experience | 0.014464 | 0.001717 |
+| Yearly_Compensation | 0.024802 | 0.001583 |
 | Education_Level=Associate degree (A.A., A.S., etc.) | 0.002003 | 0.000191 |
 | Education_Level=Bachelor’s degree (B.A., B.S., B.Eng., etc.) | -0.006122 | 0.000834 |
-| Education_Level=Master’s degree (M.A., M.S., M.Eng., MBA, etc.) | -0.004455 | 0.000574 |
+| Education_Level=Master’s degree (M.A., M.S., M.Eng., MBA, etc.) | -0.004457 | 0.000572 |
 | Education_Level=Other (please specify): | 0.000014 | 0.000036 |
 | Education_Level=Other doctoral degree (Ph.D., Ed.D., etc.) | 0.000157 | 0.000067 |
 | Education_Level=Primary/elementary school | 0.005834 | 0.000270 |
 | Education_Level=Professional degree (JD, MD, Ph.D, Ed.D, etc.) | -0.000669 | 0.000196 |
 | Education_Level=Professional degree (JD, MD, etc.) | 0.000066 | 0.000057 |
 | Education_Level=Secondary school (e.g. American high school, German Realschule or Gymnasium, etc.) | 0.019006 | 0.000654 |
-| Education_Level=Some college/university study without earning a degree | 0.009248 | 0.000634 |
+| Education_Level=Some college/university study without earning a degree | 0.009250 | 0.000635 |
 | Education_Level=Something else | 0.002525 | 0.000158 |
 
 Aggregated to the three original source features (standard deviations combined as root-sum-of-squares):
 
 | Source feature | Mean decrease | Std |
 | --- | --- | --- |
-| Years_of_Experience | 0.014463 | 0.001717 |
-| Yearly_Compensation | 0.024804 | 0.001583 |
+| Years_of_Experience | 0.014464 | 0.001717 |
+| Yearly_Compensation | 0.024802 | 0.001583 |
 | Education_Level | 0.027608 | 0.001427 |

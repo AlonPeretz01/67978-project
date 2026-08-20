@@ -36,3 +36,13 @@ Thumbs.db
 # --- Logs ---
 *.log
 data_group44.zip
+# Submission artefacts
+code_group44.zip
+data_group44.zip
+
+# Internal notes
+outputs/ai/סיכום_ממצאים_AI.md
+
+*_group44.zip
+
+.claude/
