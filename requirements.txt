@@ -7,3 +7,5 @@ scikit-learn
 scipy
 jupyter
 kmodes
+streamlit>=1.49
+plotly>=5.18

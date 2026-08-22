@@ -39,6 +39,7 @@ from src.visualization.plot_nulls import (
 from scripts.audit.generate_ai_analysis import write_ai_analysis
 from scripts.audit.generate_audit import write_audit
 from scripts.audit.generate_clustering import write_clustering
+from scripts.audit.generate_community import write_community_audit
 from scripts.audit.generate_followup import (
     write_reconciliation,
     write_rf_eval,
@@ -69,6 +70,7 @@ STAGE_NAMES = (
     "write master audit",
     "verify cohort audit values",
     "generate pipeline figures",
+    "write community audit",
     "run AI adoption analysis",
     "cluster developers with k-modes",
     "write cohort reconciliation",
@@ -192,14 +194,16 @@ def run_pipeline(dataset_path: Path = PROCESSED_DATASET) -> dict[str, Any]:
         orderA=PARTICIPATION_ORDER,
         orderB=AGE_BINS_ORDER,
     )
-    is_part_of_community(
+    belonging_metrics = is_part_of_community(
         cleaned_dataframe,
         FIGURES_DIRECTORY / "part_of_community_2017_2025.png",
     )
-    visit_over_time(
+    participation_metrics = visit_over_time(
         cleaned_dataframe,
         FIGURES_DIRECTORY / "visits_so_freq_2017_2025.png",
     )
+    report_stage("write community audit")
+    write_community_audit(cleaned_dataframe, belonging_metrics, participation_metrics)
 
     # The AI and clustering analyses each run once here and hand their tables
     # to the matching audit stage below, so the published figures and the

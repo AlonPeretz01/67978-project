@@ -65,6 +65,17 @@ It writes these reports in `outputs/audit/`:
 - `RF_EVAL.md`
 - `ROBUSTNESS.md`
 
+## Demo app
+
+`app/streamlit_app.py` presents the findings interactively over four tabs: the junior/mid/senior series, the placebo scan over candidate break years, the coverage of the two community questions, and the 2025 K-modes clusters. Charts are Plotly, so filtering a cohort or dragging the break-year slider updates the page in the browser without a server-side redraw.
+
+```bash
+pip install -r requirements.txt
+streamlit run app/streamlit_app.py
+```
+
+The app needs no raw data and does not load the harmonized master dataset. It runs entirely from the committed audit files in `outputs/audit/`, plus two committed figures in `outputs/figures/` whose underlying tables are not written to any audit file.
+
 ## Repository structure
 
 ```text
